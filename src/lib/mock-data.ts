@@ -105,6 +105,17 @@ export const mockMessages = [
   },
 ];
 
+export const adminDashboardStats = {
+  totalRevenue: "$602,170",
+  revenueDelta: "+18.4% MoM",
+  onboardedClients: "34",
+  clientsDelta: "+3 this month",
+  activeCampaigns: "62",
+  campaignsDelta: "+8 vs last quarter",
+  avgOpenRate: "41.6%",
+  openRateDelta: "+2.1% progressive",
+};
+
 export const mockAnalyticsMonthlyTrends = [
   { month: "Jan", revenue: 4000, spend: 800 },
   { month: "Feb", revenue: 5500, spend: 1100 },

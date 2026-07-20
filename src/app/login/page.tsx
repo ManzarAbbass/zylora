@@ -14,31 +14,31 @@ interface Shape {
 const shapes: Shape[] = [
   {
     className: "-left-12 -top-12",
-    element: <div className="size-48 rounded-full bg-[#2563eb]/5" />,
+    element: <div className="size-48 rounded-full bg-[#124768]/5" />,
     duration: 8,
     delay: 0,
   },
   {
     className: "-bottom-16 left-1/3",
-    element: <div className="size-64 rounded-full bg-[#2563eb]/5" />,
+    element: <div className="size-64 rounded-full bg-[#124768]/5" />,
     duration: 10,
     delay: 1.5,
   },
   {
     className: "right-16 top-1/4",
-    element: <div className="size-32 rounded-xl bg-[#4f46e5]/5" />,
+    element: <div className="size-32 rounded-xl bg-[#124768]/5" />,
     duration: 7,
     delay: 0.8,
   },
   {
     className: "bottom-1/3 right-8",
-    element: <div className="size-24 rotate-45 bg-[#4f46e5]/5" />,
+    element: <div className="size-24 rotate-45 bg-[#124768]/5" />,
     duration: 9,
     delay: 2.2,
   },
   {
     className: "left-1/4 top-1/3",
-    element: <div className="size-40 rounded-full bg-[#2563eb]/5" />,
+    element: <div className="size-40 rounded-full bg-[#124768]/5" />,
     duration: 6,
     delay: 1.2,
   },
@@ -106,7 +106,7 @@ export default function LoginPage() {
                     key={f.label}
                     className="flex items-center gap-3 rounded-lg border border-slate-100 bg-[#f8fafc] p-3"
                   >
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#2563eb]">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#124768]">
                       <Icon className="size-4 text-white" />
                     </div>
                     <span className="text-sm font-medium text-slate-700">
@@ -124,7 +124,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex w-full items-center justify-center bg-[#2563eb] p-6 lg:w-1/2">
+      <div className="flex w-full items-center justify-center bg-[#124768] p-6 lg:w-1/2">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:hidden">
             <h1 className="text-2xl font-bold tracking-tight text-white">
@@ -161,7 +161,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#2563eb] transition focus:ring-2"
+                    className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#124768] transition focus:ring-2"
                   />
                 </div>
               </div>
@@ -181,14 +181,14 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#2563eb] transition focus:ring-2"
+                    className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#124768] transition focus:ring-2"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-[#2563eb] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:ring-offset-2"
+                className="w-full rounded-lg bg-[#124768] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#124768]/90 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-2"
               >
                 Authenticate Credentials
               </button>
@@ -207,7 +207,7 @@ export default function LoginPage() {
                       toastMsg: "Admin credentials injected. Mode locked.",
                     })
                   }
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:ring-offset-1"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
                 >
                   Simulate Zylora Agency Admin
                 </button>
@@ -219,7 +219,7 @@ export default function LoginPage() {
                       toastMsg: "Client session profile loaded. Mode locked.",
                     })
                   }
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:ring-offset-1"
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
                 >
                   Simulate Ahmed Clothing Profile
                 </button>
