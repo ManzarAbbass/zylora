@@ -28,7 +28,7 @@ const clientNavItems = [
   { icon: BarChart3, label: "Campaign Analytics", href: "/client/dashboard", badge: null },
   { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
   { icon: FileText, label: "Performance Reports", href: "/client/reports", badge: null },
-  { icon: MessageSquare, label: "Agency Chat", href: "/client/chat", badge: 1 },
+  { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: 1 },
   { icon: Settings, label: "Workspace", href: "/client/workspace", badge: null },
 ];
 
