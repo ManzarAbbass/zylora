@@ -7,6 +7,14 @@
   --color-zylora-border: #e2e8f0;
 }
 
+@utility scrollbar-none {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 @keyframes float {
   0%,
   100% {

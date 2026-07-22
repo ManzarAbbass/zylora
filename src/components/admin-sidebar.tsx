@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 
-const navItems = [
+const adminNavItems = [
   { icon: LayoutDashboard, label: "Operational Overview", href: "/admin/dashboard", badge: null },
   { icon: BarChart3, label: "Client Analytics", href: "/admin/analytics", badge: null },
   { icon: CheckCircle2, label: "Asset Approvals", href: "/admin/approvals", badge: 4 },
@@ -24,12 +24,24 @@ const navItems = [
   { icon: Settings, label: "Settings", href: "/admin/settings", badge: null },
 ];
 
+const clientNavItems = [
+  { icon: BarChart3, label: "Campaign Analytics", href: "/client/dashboard", badge: null },
+  { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
+  { icon: FileText, label: "Performance Reports", href: "/client/reports", badge: null },
+  { icon: MessageSquare, label: "Agency Chat", href: "/client/chat", badge: 1 },
+  { icon: Settings, label: "Workspace", href: "/client/workspace", badge: null },
+];
+
 interface AdminSidebarProps {
   onClose?: () => void;
+  role?: "ADMIN" | "CLIENT";
 }
 
-export function AdminSidebar({ onClose }: AdminSidebarProps) {
+export function AdminSidebar({ onClose, role = "ADMIN" }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const isClient = role === "CLIENT";
+  const navItems = isClient ? clientNavItems : adminNavItems;
+  const dashboardHref = isClient ? "/client/dashboard" : "/admin/dashboard";
 
   return (
     <aside
@@ -66,13 +78,13 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
       <div className="flex-1 overflow-y-auto px-3 py-4">
         {!collapsed && (
           <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-300">
-            AGENCY WORKSPACE
+            {isClient ? "BRAND WORKSPACE" : "AGENCY WORKSPACE"}
           </p>
         )}
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.href === "/admin/dashboard";
+            const isActive = item.href === dashboardHref;
             return (
               <Link
                 key={item.label}
@@ -109,13 +121,17 @@ export function AdminSidebar({ onClose }: AdminSidebarProps) {
       <div className="border-t border-white/10 p-3">
         <div className="flex items-center gap-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/15 text-xs font-bold text-white">
-            ZA
+            {isClient ? "AC" : "ZA"}
           </div>
           {!collapsed && (
             <>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-white">Zylora Admin</p>
-                <p className="truncate text-xs text-slate-300">Agency operator</p>
+                <p className="truncate text-sm font-medium text-white">
+                  {isClient ? "Ahmed Clothing" : "Zylora Admin"}
+                </p>
+                <p className="truncate text-xs text-slate-300">
+                  {isClient ? "Enterprise plan" : "Agency operator"}
+                </p>
               </div>
               <button className="rounded-lg p-1.5 text-slate-300 transition hover:bg-white/10 hover:text-white">
                 <Settings className="size-4" />

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { AdminTopbar } from "@/components/admin-topbar";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -21,15 +21,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <AdminSidebar onClose={() => setSidebarOpen(false)} />
+        <AdminSidebar role="CLIENT" onClose={() => setSidebarOpen(false)} />
       </div>
 
       <div className="hidden lg:block">
-        <AdminSidebar />
+        <AdminSidebar role="CLIENT" />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <AdminTopbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <AdminTopbar role="CLIENT" onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <main className="scrollbar-none flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </div>
     </div>

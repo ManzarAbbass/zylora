@@ -116,6 +116,27 @@ export const adminDashboardStats = {
   openRateDelta: "+2.1% progressive",
 };
 
+export const clientDashboardStats = {
+  revenueAttributed: "$68,420",
+  revenueDelta: "+12.5%",
+  emailsDelivered: "128,400",
+  emailsDelta: "+8.3%",
+  openRate: "42.8%",
+  openRateDelta: "+2.1%",
+  clickThrough: "6.4%",
+  clickThroughDelta: "+0.8%",
+};
+
+export const clientRevenueTrend = [
+  { month: "Jan", revenue: 32000, spend: 12000 },
+  { month: "Feb", revenue: 38500, spend: 14500 },
+  { month: "Mar", revenue: 42000, spend: 16000 },
+  { month: "Apr", revenue: 51000, spend: 19500 },
+  { month: "May", revenue: 58000, spend: 22000 },
+  { month: "Jun", revenue: 64000, spend: 24000 },
+  { month: "Jul", revenue: 68420, spend: 25800 },
+];
+
 export const mockAnalyticsMonthlyTrends = [
   { month: "Jan", revenue: 4000, spend: 800 },
   { month: "Feb", revenue: 5500, spend: 1100 },

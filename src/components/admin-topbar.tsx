@@ -5,10 +5,11 @@ import { Search, Bell, Menu } from "lucide-react";
 
 interface AdminTopbarProps {
   onMenuToggle?: () => void;
+  role?: "ADMIN" | "CLIENT";
 }
 
-export function AdminTopbar({ onMenuToggle }: AdminTopbarProps) {
-  const [isAdmin, setIsAdmin] = useState(true);
+export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) {
+  const [isAdmin, setIsAdmin] = useState(role === "ADMIN");
 
   return (
     <header className="flex items-center gap-4 border-b border-slate-100 bg-white px-4 py-3 sm:gap-6 sm:px-6">
@@ -21,9 +22,11 @@ export function AdminTopbar({ onMenuToggle }: AdminTopbarProps) {
 
       <div className="min-w-0">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-          ADMIN · OPERATIONAL OVERVIEW
+          {role === "CLIENT" ? "CLIENT · CAMPAIGN ANALYTICS" : "ADMIN · OPERATIONAL OVERVIEW"}
         </p>
-        <p className="text-sm font-medium text-slate-500">Welcome back, Zylora team</p>
+        <p className="text-sm font-medium text-slate-500">
+          {role === "CLIENT" ? "Welcome back, Ahmed" : "Welcome back, Zylora team"}
+        </p>
       </div>
 
       <div className="relative mx-auto hidden max-w-md flex-1 sm:block">
