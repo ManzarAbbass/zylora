@@ -20,7 +20,7 @@ const adminNavItems = [
   { icon: BarChart3, label: "Client Analytics", href: "/admin/analytics", badge: null },
   { icon: CheckCircle2, label: "Asset Approvals", href: "/admin/approvals", badge: 4 },
   { icon: FileText, label: "Financial Reports", href: "/admin/reports", badge: null },
-  { icon: MessageSquare, label: "Communications", href: "/admin/communications", badge: 3 },
+  { icon: MessageSquare, label: "Communications", href: "/admin/messages", badge: 3 },
   { icon: Settings, label: "Settings", href: "/admin/settings", badge: null },
 ];
 
