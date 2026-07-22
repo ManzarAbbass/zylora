@@ -127,7 +127,7 @@ export const clientDashboardStats = {
   clickThroughDelta: "+0.8%",
 };
 
-export const clientRevenueTrend = [
+export const mockAnalyticsMonthlyTrends = [
   { month: "Jan", revenue: 32000, spend: 12000 },
   { month: "Feb", revenue: 38500, spend: 14500 },
   { month: "Mar", revenue: 42000, spend: 16000 },
@@ -135,14 +135,4 @@ export const clientRevenueTrend = [
   { month: "May", revenue: 58000, spend: 22000 },
   { month: "Jun", revenue: 64000, spend: 24000 },
   { month: "Jul", revenue: 68420, spend: 25800 },
-];
-
-export const mockAnalyticsMonthlyTrends = [
-  { month: "Jan", revenue: 4000, spend: 800 },
-  { month: "Feb", revenue: 5500, spend: 1100 },
-  { month: "Mar", revenue: 7800, spend: 1500 },
-  { month: "Apr", revenue: 11000, spend: 2200 },
-  { month: "May", revenue: 13400, spend: 2900 },
-  { month: "Jun", revenue: 15800, spend: 3400 },
-  { month: "Jul", revenue: 17200, spend: 3850 },
 ];

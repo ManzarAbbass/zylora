@@ -2,18 +2,17 @@
 
 import { DollarSign, Mail, Percent, MousePointerClick } from "lucide-react";
 import {
-  AreaChart,
+  ComposedChart,
   Area,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { StatCard } from "@/components/stat-card";
-import { clientDashboardStats, clientRevenueTrend } from "@/lib/mock-data";
+import { clientDashboardStats, mockAnalyticsMonthlyTrends } from "@/lib/mock-data";
 
 const stats = [
   { icon: DollarSign, label: "Revenue attributed", value: clientDashboardStats.revenueAttributed, delta: clientDashboardStats.revenueDelta },
@@ -42,14 +41,24 @@ export default function ClientDashboardPage() {
             <h2 className="text-lg font-semibold text-slate-900">Revenue trend</h2>
             <p className="text-sm text-slate-500">Attributed revenue vs. ad spend, last 7 months</p>
           </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "#3B5FE0" }} />
+              <span className="text-xs text-slate-600">Revenue</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "#94a3b8" }} />
+              <span className="text-xs text-slate-600">Spend</span>
+            </div>
+          </div>
         </div>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={clientRevenueTrend} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+            <ComposedChart data={mockAnalyticsMonthlyTrends} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#3B5FE0" stopOpacity={0.12} />
+                  <stop offset="95%" stopColor="#3B5FE0" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
@@ -68,16 +77,11 @@ export default function ClientDashboardPage() {
                   fontSize: "13px",
                 }}
               />
-              <Legend
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: "13px", color: "#475569" }}
-              />
               <Area
                 type="monotone"
                 dataKey="revenue"
                 fill="url(#revenueGradient)"
-                stroke="#2563eb"
+                stroke="#3B5FE0"
                 strokeWidth={2}
                 name="Revenue"
               />
@@ -89,7 +93,7 @@ export default function ClientDashboardPage() {
                 name="Spend"
                 dot={false}
               />
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
