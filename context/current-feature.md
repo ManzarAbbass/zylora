@@ -2,25 +2,20 @@
 
 ## Status
 
-**In Progress**
+**Completed**
 
 ## Goals
 
-1. Create `drizzle.config.ts` — Drizzle compiler config with `postgresql` dialect, schema path `./src/db/schema.ts`, out dir `./src/db/migrations`, and `DATABASE_URL` env linkage.
-2. Define `src/db/schema.ts` — Enums (`userRoleEnum`, `approvalStatusEnum`) and tables (`users`, `campaigns`, `content_approvals`, `messages`) with proper UUID PKs, cascade deletes, and Neon-compatible column types.
-3. Create `src/db/index.ts` — Serverless pooled client using `@neondatabase/serverless` exporting a single `db` instance.
-4. Wire `DATABASE_URL` in `.env` pointing to the Neon **development** branch (`br-sandbox-dev-env`).
-5. Generate initial migration via `drizzle-kit generate` — no `db push`.
+<!-- Feature goals will be restored when this feature is revisited or a new feature begins. -->
 
 ## Notes
 
-- Based on specification at `context/features/database-spec.md`.
-- Migrations must be generated locally with `drizzle-kit generate`, never pushed directly to Neon.
-- Database connections in local dev read from `.env` (development branch); production reads from `.env.production`.
-- Cross-reference: `src/lib/mock-data.ts` to ensure schema column alignment with existing mock layers.
+<!-- Implementation notes and cross-references will be restored when this feature is revisited or a new feature begins. -->
 
 ## History
 
+- **2026-07-23** — Database seeding engine implemented on `feature/database-seed`. Created automated seed script at `src/db/seed.ts` using pure Drizzle ORM syntax. Pipeline: clean slate purge, bcryptjs-hashed ADMIN (`Zylora CEO` / `ceo@zylora.com`) and CLIENT (`Ahmed Clothing Team` / `ahmed@clothing.com`), 2 campaigns, 1 pending content approval, 2 B2B messages. Added `npm run db:seed` script. Installed `bcryptjs`, `@types/bcryptjs`, `tsx`. Migrations applied and seed verified on Neon dev branch.
+- **2026-07-23** — Database seeding specification scaffold created at `context/features/database-seed-spec.md` — empty placeholder file for future database seed documentation and patterns.
 - **2026-07-23** — Client Approvals Queue & Pipeline Chat (Phase 3) implemented on `feature/client-dashboard-phase-3`. Built the Creative Asset Approval Queue at `/src/app/client/approvals/page.tsx` — a multi-column grid of asset review cards from expanded `mockContentApprovals` (5 entries) with visual media frames (`aspect-video`/`object-cover`), ad copy nodes, and Approve/Request Revision action buttons with stateful micro-interactions (green `border-emerald-500` approval, amber `border-amber-400` revision) and Sonner toasts. Cards grouped into Pending Review / Changes Requested / Approved sections with badge-style outline headings. Built the Direct Agency Pipeline Chat at `/src/app/client/messages/page.tsx` — a messaging terminal mapping `mockMessages` (expanded to 6 entries) with sender-role alignment (CLIENT right / `bg-[#3B5FE0]` blue bubbles, ADMIN left / `bg-slate-100`), date separators, and input hooks that append messages with Sonner toasts. Updated sidebar Agency Chat link from `/client/chat` to `/client/messages`. All components use `'use client'` directives and align with Premium Corporate Light Slate theme. Built per `context/features/client-dashboard-phase-3-spec.md`.
 - **2026-07-23** — Admin Messaging Desk & Global Inbox (Phase 3) implemented on `feature/admin-dashboard-phase-3`. Built a full-screen admin messaging hub at `/src/app/admin/messages/page.tsx`. Inbox view lists clients from `mockClientsList` with notification badges (Ahmed Clothing: 3). Clicking a client opens their chat — single-panel toggle on mobile with back arrow, dual-panel (inbox sidebar + chat) on desktop. Message history maps `mockMessages` with sender-role alignment (ADMIN right / CLIENT left). Bubbles: admin `bg-slate-100`, client `bg-[#3B5FE0]`. Input with Paperclip icon + "Send Response" button appends state and fires Sonner toast. Updated sidebar Communications link to `/admin/messages`. Responsive layout matching Premium Corporate Light Slate theme. Built per `context/features/admin-dashboard-phase-3-spec.md`.
 - **2026-07-23** — Corporate Client Analytics Graph Curve (Phase 2) implemented on `feature/client-dashboard-phase-2`. Replaced placeholder chart canvas with dual-series interactive `<ComposedChart>` using Recharts on `/src/app/client/dashboard/page.tsx`. "Revenue trend" card header with custom inline legend (blue dot `#3B5FE0` for Revenue, grey dot `#94a3b8` for Spend). Integrated `mockAnalyticsMonthlyTrends` data for 7-month (Jan–Jul) revenue vs. ad spend visualization. Series 1 (Attributed Revenue): `<Area>` with `type="monotone"`, brand blue (`#3B5FE0`) gradient fill. Series 2 (Ad Spend): `<Line>` with minimal thin neutral gray stroke. X-Axis: Jan–Jul with zero vertical grid lines; Y-Axis: $0k–$80k with soft hair-line horizontal grid. Interactive `<Tooltip>` with floating white overlay. Premium Corporate Light Slate theme: white card (`bg-[#ffffff]`), thin borders, soft shadows. Fully responsive via `<ResponsiveContainer>`. Cleaned up unused `clientRevenueTrend` export. Built per `context/features/client-dashboard-phase-2-spec.md`.
