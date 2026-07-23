@@ -2,13 +2,22 @@
 
 ## Status
 
-**Completed**
+**In Progress**
 
 ## Goals
-<!-- Goals Here -->
+
+1. Create `drizzle.config.ts` — Drizzle compiler config with `postgresql` dialect, schema path `./src/db/schema.ts`, out dir `./src/db/migrations`, and `DATABASE_URL` env linkage.
+2. Define `src/db/schema.ts` — Enums (`userRoleEnum`, `approvalStatusEnum`) and tables (`users`, `campaigns`, `content_approvals`, `messages`) with proper UUID PKs, cascade deletes, and Neon-compatible column types.
+3. Create `src/db/index.ts` — Serverless pooled client using `@neondatabase/serverless` exporting a single `db` instance.
+4. Wire `DATABASE_URL` in `.env` pointing to the Neon **development** branch (`br-sandbox-dev-env`).
+5. Generate initial migration via `drizzle-kit generate` — no `db push`.
 
 ## Notes
-<!-- Notes Here -->
+
+- Based on specification at `context/features/database-spec.md`.
+- Migrations must be generated locally with `drizzle-kit generate`, never pushed directly to Neon.
+- Database connections in local dev read from `.env` (development branch); production reads from `.env.production`.
+- Cross-reference: `src/lib/mock-data.ts` to ensure schema column alignment with existing mock layers.
 
 ## History
 

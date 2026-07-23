@@ -30,7 +30,7 @@ Zylora consolidates this entire corporate B2B operational pipeline into a unifie
 |Layer|Choice|
 |Framewor|kNext.js 15 / React 19 (App Router, Server Actions ecosystem)|
 |Language|TypeScript|
-|Database|Neon PostgreSQL (Decoupled Serverless Cloud Stack
+|Database|Neon PostgreSQL (Decoupled Serverless Cloud Stack)|
 |ORM|Drizzle ORM|
 |Caching|Upstash Redis|
 |Queue / Crons|Upstash QStash|
