@@ -1,0 +1,64 @@
+import { sql, eq, asc, desc } from "drizzle-orm";
+import { db } from "@/db";
+import { users, messages } from "@/db/schema";
+
+export interface AdminChatThread {
+  id: string;
+  name: string;
+  email: string;
+  companyName: string | null;
+  packageName: string | null;
+  latestMessage: string | null;
+  latestMessageAt: Date | null;
+  messageCount: number;
+}
+
+export async function getAdminChatThreads(): Promise<AdminChatThread[]> {
+  const rows = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      companyName: users.companyName,
+      packageName: users.packageName,
+      latestMessage: sql<string | null>`
+        (SELECT m.message_text FROM ${messages} m
+         WHERE m.client_id = ${users.id}
+         ORDER BY m.created_at DESC
+         LIMIT 1)
+      `,
+      latestMessageAt: sql<Date | null>`
+        (SELECT m.created_at FROM ${messages} m
+         WHERE m.client_id = ${users.id}
+         ORDER BY m.created_at DESC
+         LIMIT 1)
+      `,
+      messageCount: sql<number>`
+        (SELECT COUNT(*) FROM ${messages} m
+         WHERE m.client_id = ${users.id})
+      `,
+    })
+    .from(users)
+    .where(eq(users.role, "CLIENT"))
+    .orderBy(
+      desc(sql`
+        (SELECT m.created_at FROM ${messages} m
+         WHERE m.client_id = ${users.id}
+         ORDER BY m.created_at DESC
+         LIMIT 1)
+      `),
+    );
+
+  return rows.map((r) => ({
+    ...r,
+    messageCount: Number(r.messageCount),
+  }));
+}
+
+export async function getChatMessagesByClient(clientId: string) {
+  return db
+    .select()
+    .from(messages)
+    .where(eq(messages.clientId, clientId))
+    .orderBy(asc(messages.createdAt));
+}
