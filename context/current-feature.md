@@ -2,15 +2,24 @@
 
 ## Status
 
-**Completed**
+**In Progress**
 
 ## Goals
 
-<!-- Feature goals will be restored when this feature is revisited or a new feature begins. -->
+- Build client-side channel view at `/client/messages` pulling historical messages from Neon PostgreSQL `messages` table matched to active user session
+- Extend `src/features/messages/queries.ts` with `getClientChatHistory(clientId)` — chronological messages sorted by `createdAt`
+- Extend `src/features/messages/actions.ts` with `sendClientMessageAction` — `"use server"` action inserting rows with `senderRole: 'CLIENT'`, `revalidatePath('/client/messages')`, and `{ success, data, error }` return pattern
+- Refactor `src/app/client/messages/page.tsx` into an async Server Component hydrating live data via `getClientChatHistory`
+- Implement chat bubble layout (CLIENT right/aligned, ADMIN left/aligned) with Premium Corporate Light Slate theme styling
+- Add optimistic message send with Sonner success toast: _"Operational message successfully routed to the Zylora agency desk."_
 
 ## Notes
 
-<!-- Implementation notes and cross-references will be restored when this feature is revisited or a new feature begins. -->
+- Built per `context/features/client-messages-spec.md`
+- Requires strict `'use client'` on interactive sub-components (message streams, input fields)
+- Full viewport height lock: `h-[calc(100vh-theme(spacing.16))]` with auto-scroll to latest message
+- Completes the dual-portal B2B communication network — synchronizes live with Agency Admin master dashboard inbox
+- Zero `any` types, fully typesafe React state mappings
 
 ## History
 
