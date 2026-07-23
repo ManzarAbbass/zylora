@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   BarChart3,
@@ -39,9 +40,9 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onClose, role = "ADMIN" }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
   const isClient = role === "CLIENT";
   const navItems = isClient ? clientNavItems : adminNavItems;
-  const dashboardHref = isClient ? "/client/dashboard" : "/admin/dashboard";
 
   return (
     <aside
@@ -84,7 +85,7 @@ export function AdminSidebar({ onClose, role = "ADMIN" }: AdminSidebarProps) {
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.href === dashboardHref;
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
               <Link
                 key={item.label}
