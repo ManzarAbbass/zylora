@@ -1,18 +1,8 @@
-"use client";
-
 import { DollarSign, Mail, Percent, MousePointerClick } from "lucide-react";
-import {
-  ComposedChart,
-  Area,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 import { StatCard } from "@/components/stat-card";
-import { clientDashboardStats, mockAnalyticsMonthlyTrends } from "@/lib/mock-data";
+import { RevenueChart } from "@/components/revenue-chart";
+import { getCampaignsByClientId } from "@/features/campaigns/queries";
+import { mockAnalyticsMonthlyTrends, clientDashboardStats } from "@/lib/mock-data";
 
 const stats = [
   { icon: DollarSign, label: "Revenue attributed", value: clientDashboardStats.revenueAttributed, delta: clientDashboardStats.revenueDelta },
@@ -21,7 +11,9 @@ const stats = [
   { icon: MousePointerClick, label: "Click-through", value: clientDashboardStats.clickThrough, delta: clientDashboardStats.clickThroughDelta },
 ];
 
-export default function ClientDashboardPage() {
+export default async function ClientDashboardPage() {
+  const campaigns = await getCampaignsByClientId("31ef43a7-d86f-4455-960d-8dba5d197363");
+
   return (
     <div>
       <div className="mb-8">
@@ -35,68 +27,57 @@ export default function ClientDashboardPage() {
         ))}
       </div>
 
-      <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
-        <div className="mb-6 flex items-start justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900">Revenue trend</h2>
-            <p className="text-sm text-slate-500">Attributed revenue vs. ad spend, last 7 months</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "#3B5FE0" }} />
-              <span className="text-xs text-slate-600">Revenue</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: "#94a3b8" }} />
-              <span className="text-xs text-slate-600">Spend</span>
-            </div>
-          </div>
-        </div>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={mockAnalyticsMonthlyTrends} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B5FE0" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="#3B5FE0" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
-                tickFormatter={(v: number) => `$${v / 1000}k`}
-              />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: "8px",
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  fontSize: "13px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                fill="url(#revenueGradient)"
-                stroke="#3B5FE0"
-                strokeWidth={2}
-                name="Revenue"
-              />
-              <Line
-                type="monotone"
-                dataKey="spend"
-                stroke="#94a3b8"
-                strokeWidth={1.5}
-                name="Spend"
-                dot={false}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="mb-8">
+        <RevenueChart data={mockAnalyticsMonthlyTrends} />
       </div>
+
+      {campaigns.length > 0 && (
+        <div>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">Active campaigns</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {campaigns.map((campaign) => (
+              <div
+                key={campaign.id}
+                className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+              >
+                <div className="mb-3 flex items-start justify-between">
+                  <h3 className="font-semibold text-slate-900">{campaign.title}</h3>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      campaign.status === "ACTIVE"
+                        ? "bg-blue-50 text-blue-700"
+                        : "bg-amber-50 text-amber-700"
+                    }`}
+                  >
+                    {campaign.status === "ACTIVE" ? (
+                      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-current" />
+                    ) : null}
+                    {campaign.status}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 border-t border-slate-100 pt-3">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Emails sent</p>
+                    <p className="mt-0.5 text-lg font-bold text-slate-900">
+                      {campaign.emailsSent.toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Open rate</p>
+                    <p className="mt-0.5 text-lg font-bold text-slate-900">{campaign.openRate}%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Revenue</p>
+                    <p className="mt-0.5 text-lg font-bold text-slate-900">
+                      ${Number(campaign.revenueGenerated).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
