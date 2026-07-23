@@ -26,3 +26,26 @@ export async function sendAdminMessageAction(clientId: string, messageText: stri
     };
   }
 }
+
+export async function sendClientMessageAction(clientId: string, messageText: string) {
+  if (!clientId || !messageText.trim()) {
+    return { success: false as const, data: null, error: "Client ID and message text are required." };
+  }
+
+  try {
+    await db.insert(messages).values({
+      clientId,
+      senderRole: "CLIENT",
+      messageText: messageText.trim(),
+    });
+
+    revalidatePath("/client/messages");
+    return { success: true as const, data: null, error: undefined };
+  } catch (error) {
+    return {
+      success: false as const,
+      data: null,
+      error: error instanceof Error ? error.message : "Failed to send message.",
+    };
+  }
+}
