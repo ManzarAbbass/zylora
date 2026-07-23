@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Mail, Lock, TrendingUp, BarChart3, Shield, Users } from "lucide-react";
 import { Toaster, toast } from "sonner";
 
@@ -52,13 +53,15 @@ const features = [
 ];
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function injectCredentials(cred: { email: string; toastMsg: string }) {
+  function simulateLogin(cred: { email: string; route: string; toastMsg: string }) {
     setEmail(cred.email);
     setPassword("••••••••••••");
     toast.success(cred.toastMsg);
+    router.push(cred.route);
   }
 
   return (
@@ -202,9 +205,10 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    injectCredentials({
+                    simulateLogin({
                       email: "admin@zylora.com",
-                      toastMsg: "Admin credentials injected. Mode locked.",
+                      route: "/admin/dashboard",
+                      toastMsg: "Admin credentials injected. Redirecting...",
                     })
                   }
                   className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
@@ -214,9 +218,10 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() =>
-                    injectCredentials({
+                    simulateLogin({
                       email: "ahmed@clothing.com",
-                      toastMsg: "Client session profile loaded. Mode locked.",
+                      route: "/client/dashboard",
+                      toastMsg: "Client session profile loaded. Redirecting...",
                     })
                   }
                   className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
