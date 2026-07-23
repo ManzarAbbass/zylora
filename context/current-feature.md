@@ -2,27 +2,19 @@
 
 ## Status
 
-**In Progress**
+**Completed**
 
 ## Goals
 
-- Build client-side channel view at `/client/messages` pulling historical messages from Neon PostgreSQL `messages` table matched to active user session
-- Extend `src/features/messages/queries.ts` with `getClientChatHistory(clientId)` — chronological messages sorted by `createdAt`
-- Extend `src/features/messages/actions.ts` with `sendClientMessageAction` — `"use server"` action inserting rows with `senderRole: 'CLIENT'`, `revalidatePath('/client/messages')`, and `{ success, data, error }` return pattern
-- Refactor `src/app/client/messages/page.tsx` into an async Server Component hydrating live data via `getClientChatHistory`
-- Implement chat bubble layout (CLIENT right/aligned, ADMIN left/aligned) with Premium Corporate Light Slate theme styling
-- Add optimistic message send with Sonner success toast: _"Operational message successfully routed to the Zylora agency desk."_
+<!-- Feature goals will be restored when this feature is revisited or a new feature begins. -->
 
 ## Notes
 
-- Built per `context/features/client-messages-spec.md`
-- Requires strict `'use client'` on interactive sub-components (message streams, input fields)
-- Full viewport height lock: `h-[calc(100vh-theme(spacing.16))]` with auto-scroll to latest message
-- Completes the dual-portal B2B communication network — synchronizes live with Agency Admin master dashboard inbox
-- Zero `any` types, fully typesafe React state mappings
+<!-- Implementation notes and cross-references will be restored when this feature is revisited or a new feature begins. -->
 
 ## History
 
+- **2026-07-24** — Corporate Client Direct Agency Message Pipeline (Phase 3 Final Core) implemented on `feature/client-messages-live`. Extended `src/features/messages/queries.ts` with `getClientChatHistory(clientId)` — chronological messages from Neon PostgreSQL sorted by `createdAt`. Extended `src/features/messages/actions.ts` with `sendClientMessageAction` — `"use server"` action inserting rows with `senderRole: 'CLIENT'`, `revalidatePath('/client/messages')`, and `{ success, data, error }` return pattern. Created `src/app/client/messages/chat-client.tsx` — `"use client"` interactive component with optimistic send, auto-scroll to latest message, date separators, and Sonner toast: _"Operational message successfully routed to the Zylora agency desk."_ Refactored `src/app/client/messages/page.tsx` from mock-data `"use client"` page into an async Server Component hydrating live DB data via `getClientChatHistory`. Premium Corporate Light Slate theme, full viewport height lock, zero `any` types. Completes dual-portal B2B communication network. Built per `context/features/client-messages-spec.md`.
 - **2026-07-24** — Agency Admin Messaging Desk & Global Inbox (Live Database) implemented on `feature/admin-messages-live`. Created `src/features/messages/queries.ts` with `getAdminChatThreads` — correlated subqueries fetching latest message, timestamp, and message count per CLIENT user from Neon PostgreSQL — and `getChatMessagesByClient(clientId)` — chronological messages by client. Created `src/features/messages/actions.ts` with `sendAdminMessageAction` — `"use server"` action inserting rows with `senderRole: 'ADMIN'`, `revalidatePath('/admin/messages')`, and `{ success, data, error }` return pattern. Created `src/features/messages/components/messaging-desk-live.tsx` — client component with optimistic send, live badge counts for messages within 7 days, and Sonner toasts. Refactored `src/app/admin/messages/page.tsx` into an async server component hydrating live thread data and messages. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types, empty state placeholder. Built per `context/features/admin-messages-spec.md`.
 - **2026-07-24** — Administrative Onboarded Clients Ledger (Phase 2 Component Upgrade) implemented on `feature/admin-clients-live`. Created `src/features/clients/queries.ts` with `getOnboardedClientsWithMetrics` — Drizzle left join aggregating campaign count and total revenue per CLIENT user from Neon PostgreSQL. Created `src/features/clients/actions.ts` with `onboardNewClientAction` — server action with bcryptjs 12-round password hashing, DB insert, and Resend email delivery of temporary credentials. Created `src/features/clients/components/clients-live-table.tsx` — interactive client component with search/filter, scroll buttons, live stat cards, and onboard modal dialog bound to the server action. Refactored `src/app/admin/dashboard/page.tsx` into an async server component hydrating live data. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types, empty state placeholder. Built per `context/features/admin-clients-spec.md`.
 - **2026-07-20** — Unified Gateway & Role Simulation Panel implemented on `feature/login-gateway`. Split layout: left side with marketing content cards + animated floating shapes on page canvas, right side with Royal Blue background and white form card. Includes email/password fields, Lucide icons, Sonner toasts, and Admin/Client simulation injection buttons. Built with Next.js 16.2.10, React 19.2.4, Tailwind v4, lucide-react, sonner.

@@ -62,3 +62,11 @@ export async function getChatMessagesByClient(clientId: string) {
     .where(eq(messages.clientId, clientId))
     .orderBy(asc(messages.createdAt));
 }
+
+export async function getClientChatHistory(clientId: string) {
+  return db
+    .select()
+    .from(messages)
+    .where(eq(messages.clientId, clientId))
+    .orderBy(asc(messages.createdAt));
+}
