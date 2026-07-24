@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { contentApprovals, campaigns } from "@/db/schema";
 
@@ -32,4 +32,26 @@ export async function getPendingApprovalsByClient(clientId: string) {
         eq(contentApprovals.status, "PENDING"),
       ),
     );
+}
+
+export async function getAllPendingApprovalsCount(): Promise<number> {
+  const [result] = await db
+    .select({ count: sql<number>`cast(count(*) as int)` })
+    .from(contentApprovals)
+    .where(eq(contentApprovals.status, "PENDING"));
+  return result?.count ?? 0;
+}
+
+export async function getClientPendingApprovalsCount(clientId: string): Promise<number> {
+  const [result] = await db
+    .select({ count: sql<number>`cast(count(*) as int)` })
+    .from(contentApprovals)
+    .innerJoin(campaigns, eq(contentApprovals.campaignId, campaigns.id))
+    .where(
+      and(
+        eq(campaigns.clientId, clientId),
+        eq(contentApprovals.status, "PENDING"),
+      ),
+    );
+  return result?.count ?? 0;
 }

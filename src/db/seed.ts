@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { db } from "./index";
-import { users, campaigns, contentApprovals, messages } from "./schema";
+import { users, campaigns, contentApprovals, messages, monthlyTrends } from "./schema";
 import { hashSync } from "bcryptjs";
 
 async function main() {
@@ -97,6 +97,18 @@ async function main() {
     },
   ]);
   console.log("  ✅ Messages created.");
+
+  // Step 7: Insert Monthly Trends (Jan–Jul)
+  await db.insert(monthlyTrends).values([
+    { clientId: client.id, month: "Jan", revenue: "4000.00", spend: "800.00" },
+    { clientId: client.id, month: "Feb", revenue: "5500.00", spend: "1100.00" },
+    { clientId: client.id, month: "Mar", revenue: "7800.00", spend: "1500.00" },
+    { clientId: client.id, month: "Apr", revenue: "11000.00", spend: "2200.00" },
+    { clientId: client.id, month: "May", revenue: "13400.00", spend: "2900.00" },
+    { clientId: client.id, month: "Jun", revenue: "15800.00", spend: "3400.00" },
+    { clientId: client.id, month: "Jul", revenue: "17200.00", spend: "3850.00" },
+  ]);
+  console.log("  ✅ Monthly trends (Jan–Jul) created.");
 
   console.log("🎉 Database seeding completed successfully.");
 }

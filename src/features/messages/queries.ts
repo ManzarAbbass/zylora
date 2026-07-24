@@ -1,4 +1,4 @@
-import { sql, eq, asc, desc } from "drizzle-orm";
+import { sql, eq, and, asc, desc } from "drizzle-orm";
 import { db } from "@/db";
 import { users, messages } from "@/db/schema";
 
@@ -69,4 +69,20 @@ export async function getClientChatHistory(clientId: string) {
     .from(messages)
     .where(eq(messages.clientId, clientId))
     .orderBy(asc(messages.createdAt));
+}
+
+export async function getUnreadClientMessagesCount(): Promise<number> {
+  const [result] = await db
+    .select({ count: sql<number>`cast(count(*) as int)` })
+    .from(messages)
+    .where(eq(messages.senderRole, "CLIENT"));
+  return result?.count ?? 0;
+}
+
+export async function getAgencyMessagesCount(clientId: string): Promise<number> {
+  const [result] = await db
+    .select({ count: sql<number>`cast(count(*) as int)` })
+    .from(messages)
+    .where(and(eq(messages.clientId, clientId), eq(messages.senderRole, "ADMIN")));
+  return result?.count ?? 0;
 }

@@ -36,3 +36,11 @@ export async function getOnboardedClientsWithMetrics(): Promise<OnboardedClient[
     status: "Active" as const,
   }));
 }
+
+export async function getClientIdByEmail(email: string): Promise<string | null> {
+  const [user] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email));
+  return user?.id ?? null;
+}

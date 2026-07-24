@@ -36,9 +36,9 @@ export function RevenueChart({ data }: { data: MonthlyTrend[] }) {
           </div>
         </div>
       </div>
-      <div className="h-80">
+      <div className="h-60 sm:h-72 lg:h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+          <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#3B5FE0" stopOpacity={0.12} />

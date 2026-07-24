@@ -5,6 +5,7 @@ import { Search, DollarSign, Users, Megaphone, Percent, X } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { onboardNewClientAction } from "@/features/clients/actions";
 import type { OnboardedClient } from "@/features/clients/queries";
+import type { AdminGlobalStats } from "@/features/campaigns/queries";
 import { StatCard } from "@/components/stat-card";
 
 const packagePill: Record<string, string> = {
@@ -46,9 +47,10 @@ const avatarColors = [
 
 interface Props {
   clients: OnboardedClient[];
+  globalStats?: AdminGlobalStats;
 }
 
-export function ClientsLiveTable({ clients }: Props) {
+export function ClientsLiveTable({ clients, globalStats }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState("");
   const [onboardOpen, setOnboardOpen] = useState(false);
@@ -68,17 +70,19 @@ export function ClientsLiveTable({ clients }: Props) {
       c.email.toLowerCase().includes(filter.toLowerCase()),
   );
 
-  const totalRevenue = clients.reduce((acc, c) => acc + Number.parseFloat(c.totalRevenue || "0"), 0);
-  const totalRevenueFormatted = "$" + totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-  const campaignsCount = clients.reduce((acc, c) => acc + c.campaignCount, 0);
-
-  const stats = [
-    { icon: DollarSign, label: "Total Revenue", value: totalRevenueFormatted, delta: "Live aggregated" },
-    { icon: Users, label: "Onboarded Clients", value: String(clients.length), delta: "Live count" },
-    { icon: Megaphone, label: "Active Campaigns", value: String(campaignsCount), delta: "Live count" },
-    { icon: Percent, label: "Avg. Open Rate", value: clients.length > 0 ? "—" : "—", delta: "Awaiting data" },
-  ];
+  const stats = globalStats
+    ? [
+        { icon: DollarSign, label: "Total Revenue", value: `$${Number(globalStats.totalRevenue).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, delta: "Live" },
+        { icon: Users, label: "Onboarded Clients", value: String(globalStats.onboardedClients), delta: "Live" },
+        { icon: Megaphone, label: "Active Campaigns", value: String(globalStats.activeCampaigns), delta: "Live" },
+        { icon: Percent, label: "Avg. Open Rate", value: `${Number(globalStats.avgOpenRate).toFixed(1)}%`, delta: "Live" },
+      ]
+    : [
+        { icon: DollarSign, label: "Total Revenue", value: clients.reduce((acc, c) => acc + Number.parseFloat(c.totalRevenue || "0"), 0).toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }), delta: "Live aggregated" },
+        { icon: Users, label: "Onboarded Clients", value: String(clients.length), delta: "Live count" },
+        { icon: Megaphone, label: "Active Campaigns", value: String(clients.reduce((acc, c) => acc + c.campaignCount, 0)), delta: "Live count" },
+        { icon: Percent, label: "Avg. Open Rate", value: "—", delta: "Awaiting data" },
+      ];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

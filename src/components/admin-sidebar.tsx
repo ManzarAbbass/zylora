@@ -36,13 +36,24 @@ const clientNavItems = [
 interface AdminSidebarProps {
   onClose?: () => void;
   role?: "ADMIN" | "CLIENT";
+  pendingApprovals?: number;
+  unreadMessages?: number;
 }
 
-export function AdminSidebar({ onClose, role = "ADMIN" }: AdminSidebarProps) {
+export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unreadMessages }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const isClient = role === "CLIENT";
-  const navItems = isClient ? clientNavItems : adminNavItems;
+
+  const resolvedNavItems = (isClient ? clientNavItems : adminNavItems).map((item) => ({
+    ...item,
+    badge:
+      item.label === "Asset Approvals" || item.label === "Approvals Queue"
+        ? pendingApprovals ?? item.badge
+        : item.label === "Communications" || item.label === "Agency Chat"
+          ? unreadMessages ?? item.badge
+          : item.badge,
+  }));
 
   return (
     <aside
@@ -83,7 +94,7 @@ export function AdminSidebar({ onClose, role = "ADMIN" }: AdminSidebarProps) {
           </p>
         )}
         <nav className="space-y-1">
-          {navItems.map((item) => {
+          {resolvedNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (

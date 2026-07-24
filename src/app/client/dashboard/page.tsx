@@ -1,18 +1,21 @@
-import { DollarSign, Mail, Percent, MousePointerClick } from "lucide-react";
+import { DollarSign, Mail, Percent, BarChart3 } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { RevenueChart } from "@/components/revenue-chart";
-import { getCampaignsByClientId } from "@/features/campaigns/queries";
-import { mockAnalyticsMonthlyTrends, clientDashboardStats } from "@/lib/mock-data";
-
-const stats = [
-  { icon: DollarSign, label: "Revenue attributed", value: clientDashboardStats.revenueAttributed, delta: clientDashboardStats.revenueDelta },
-  { icon: Mail, label: "Emails delivered", value: clientDashboardStats.emailsDelivered, delta: clientDashboardStats.emailsDelta },
-  { icon: Percent, label: "Open rate", value: clientDashboardStats.openRate, delta: clientDashboardStats.openRateDelta },
-  { icon: MousePointerClick, label: "Click-through", value: clientDashboardStats.clickThrough, delta: clientDashboardStats.clickThroughDelta },
-];
+import { getCampaignsByClientId, getClientWorkspaceStats, getClientMonthlyTrends } from "@/features/campaigns/queries";
+import { getClientIdByEmail } from "@/features/clients/queries";
 
 export default async function ClientDashboardPage() {
-  const campaigns = await getCampaignsByClientId("31ef43a7-d86f-4455-960d-8dba5d197363");
+  const clientId = await getClientIdByEmail("ahmed@clothing.com");
+  if (!clientId) throw new Error("Client not found");
+
+  const [campaigns, stats, monthlyTrends] = await Promise.all([
+    getCampaignsByClientId(clientId),
+    getClientWorkspaceStats(clientId),
+    getClientMonthlyTrends(clientId),
+  ]);
+
+  const formattedRevenue = `$${Number(stats.totalRevenue).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedEmails = Number(stats.totalImpressions).toLocaleString("en-US");
 
   return (
     <div>
@@ -22,54 +25,74 @@ export default async function ClientDashboardPage() {
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((s) => (
-          <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} delta={s.delta} />
-        ))}
+        <StatCard icon={DollarSign} label="Revenue attributed" value={formattedRevenue} delta="Live" />
+        <StatCard icon={Mail} label="Emails delivered" value={formattedEmails} delta="Live" />
+        <StatCard icon={Percent} label="Open rate" value={`${Number(stats.avgOpenRate).toFixed(1)}%`} delta="Live" />
+        <StatCard icon={BarChart3} label="Active campaigns" value={String(stats.activeCampaigns)} delta="Live" />
       </div>
 
       <div className="mb-8">
-        <RevenueChart data={mockAnalyticsMonthlyTrends} />
+        {monthlyTrends.length > 0 ? (
+          <RevenueChart data={monthlyTrends} />
+        ) : (
+          <div className="rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-slate-900">Revenue trend</h2>
+              <p className="text-sm text-slate-500">Attributed revenue vs. ad spend, last 7 months</p>
+            </div>
+            <div className="flex h-60 items-center justify-center text-sm text-slate-400 sm:h-72 lg:h-80">
+              No monthly trend data available yet.
+            </div>
+          </div>
+        )}
       </div>
 
       {campaigns.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-slate-900">Active campaigns</h2>
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-900">Campaigns</h2>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              <span className="text-emerald-600 font-semibold">{campaigns.filter((c) => c.status === "ACTIVE").length}</span>
+              <span>Active</span>
+              <span className="text-slate-300">·</span>
+              <span className="text-amber-600 font-semibold">{campaigns.filter((c) => c.status !== "ACTIVE").length}</span>
+              <span>Paused</span>
+            </span>
+          </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm"
+                className="group rounded-xl border border-slate-100 bg-white shadow-sm transition hover:shadow-md hover:border-slate-200"
               >
-                <div className="mb-3 flex items-start justify-between">
-                  <h3 className="font-semibold text-slate-900">{campaign.title}</h3>
+                <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 sm:px-5 sm:py-4">
+                  <h3 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{campaign.title}</h3>
                   <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
                       campaign.status === "ACTIVE"
-                        ? "bg-blue-50 text-blue-700"
+                        ? "bg-emerald-50 text-emerald-700"
                         : "bg-amber-50 text-amber-700"
                     }`}
                   >
-                    {campaign.status === "ACTIVE" ? (
-                      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-current" />
-                    ) : null}
-                    {campaign.status}
+                    <span className={`inline-block size-1.5 rounded-full ${campaign.status === "ACTIVE" ? "bg-emerald-500" : "bg-amber-400"}`} />
+                    {campaign.status === "ACTIVE" ? "Active" : "Paused"}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-4 border-t border-slate-100 pt-3">
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Emails sent</p>
-                    <p className="mt-0.5 text-lg font-bold text-slate-900">
+                <div className="grid grid-cols-3 divide-x divide-slate-100">
+                  <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400 sm:text-xs">Emails</p>
+                    <p className="mt-1 text-base font-bold text-slate-900 sm:text-lg">
                       {campaign.emailsSent.toLocaleString()}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Open rate</p>
-                    <p className="mt-0.5 text-lg font-bold text-slate-900">{campaign.openRate}%</p>
+                  <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400 sm:text-xs">Open rate</p>
+                    <p className="mt-1 text-base font-bold text-slate-900 sm:text-lg">{campaign.openRate}%</p>
                   </div>
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Revenue</p>
-                    <p className="mt-0.5 text-lg font-bold text-slate-900">
-                      ${Number(campaign.revenueGenerated).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <div className="px-3 py-3 text-center sm:px-5 sm:py-4">
+                    <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400 sm:text-xs">Revenue</p>
+                    <p className="mt-1 text-base font-bold text-[#3B5FE0] sm:text-lg">
+                      ${Number(campaign.revenueGenerated).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </p>
                   </div>
                 </div>

@@ -41,6 +41,17 @@ export const contentApprovals = pgTable("content_approvals", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const monthlyTrends = pgTable("monthly_trends", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  clientId: uuid("client_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  month: text("month").notNull(),
+  revenue: numeric("revenue", { precision: 12, scale: 2 }).default("0.00").notNull(),
+  spend: numeric("spend", { precision: 12, scale: 2 }).default("0.00").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const messages = pgTable("messages", {
   id: uuid("id").defaultRandom().primaryKey(),
   clientId: uuid("client_id")
