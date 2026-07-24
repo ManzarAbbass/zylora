@@ -1,39 +1,20 @@
 # Current Feature
 
-Quick Win — N+1 Query Optimization in Admin Messages
-
 ## Status
 
-**In Progress**
+**Completed**
 
 ## Goals
 
-- Eliminate the N+1 query pattern in `src/app/admin/messages/page.tsx` where each chat thread triggers a separate `getChatMessagesByClient(thread.id)` call
-- Batch-load messages using Drizzle's `inArray` clause to reduce DB round-trips from `1 + N` to `2` total queries
-- Create optimized query helper `getChatMessagesByClientIds(clientIds: string[])` in `src/features/messages/queries.ts`
-- No behavioral changes to the UI — purely a backend query optimization
+<!-- Feature goals will be restored when this feature is revisited or a new feature begins. -->
 
 ## Notes
 
-- Identified by automated codebase scanner as **H-2 (High severity)**
-- File: `src/app/admin/messages/page.tsx`, lines 18–28
-- For 50 clients, current code does 51 DB round-trips; fix reduces to 2
-- **Low risk** — isolated refactor inside `queries.ts` and `page.tsx`, no client-side changes, no data model changes
-- Authentication not yet implemented — any auth-related issues are excluded from this feature
-
-## Quick Wins (Low Risk)
-
-The following issues from the codebase scan are considered **low risk / quick wins** suitable for immediate action:
-
-| Issue | File | Lines | Description | Est. Effort |
-|-------|------|-------|-------------|-------------|
-| **H-2** | `src/app/admin/messages/page.tsx` | 18–28 | N+1 query in admin messages — batch-load with Drizzle `inArray` | ~20 min |
-| **L-2** | `src/app/layout.tsx` | 5–6 | Boilerplate "Create Next App" metadata | ~5 min |
-| **L-3** | `src/app/client/messages/chat-client.tsx` | 117 | Invalid `theme(spacing.16)` in inline style | ~5 min |
-| **L-4** | `src/app/client/layout.tsx`, `dashboard/page.tsx` | 10, 9 | `throw Error` instead of `notFound()` | ~10 min |
-| **L-5** | `src/db/index.ts` | 1–6 | No graceful pool shutdown (pool.end) | ~10 min |
+<!-- Implementation notes and cross-references will be restored when this feature is revisited or a new feature begins. -->
 
 ## History
+
+- **2026-07-24** — Quick Win — N+1 Query Optimization & Low-Risk Fixes implemented on `feature/quick-win-n1-query-optimization-in-admin-messages`. Resolved H-2 N+1 query pattern in admin messages page by introducing `getChatMessagesByClientIds()` with Drizzle `inArray` — reducing DB round-trips from N+1 to 2. Applied low-risk cleanups: updated boilerplate metadata to Zylora branding (L-2), fixed invalid `theme(spacing.16)` runtime CSS in chat-client.tsx (L-3), replaced `throw Error` with proper `notFound()` calls for missing clients (L-4), and added graceful Neon pool shutdown handlers for SIGTERM/SIGINT (L-5). Built per automated codebase scanner findings.
 
 - **2026-07-20** — Unified Gateway & Role Simulation Panel implemented on `feature/login-gateway`. Split layout: left side with marketing content cards + animated floating shapes on page canvas, right side with Royal Blue background and white form card. Includes email/password fields, Lucide icons, Sonner toasts, and Admin/Client simulation injection buttons. Built with Next.js 16.2.10, React 19.2.4, Tailwind v4, lucide-react, sonner.
 
