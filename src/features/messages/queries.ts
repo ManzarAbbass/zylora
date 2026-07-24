@@ -1,4 +1,4 @@
-import { sql, eq, and, asc, desc } from "drizzle-orm";
+import { sql, eq, and, asc, desc, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { users, messages } from "@/db/schema";
 
@@ -61,6 +61,22 @@ export async function getChatMessagesByClient(clientId: string) {
     .from(messages)
     .where(eq(messages.clientId, clientId))
     .orderBy(asc(messages.createdAt));
+}
+
+export async function getChatMessagesByClientIds(clientIds: string[]) {
+  if (clientIds.length === 0) return {};
+  const rows = await db
+    .select()
+    .from(messages)
+    .where(inArray(messages.clientId, clientIds))
+    .orderBy(asc(messages.createdAt));
+
+  const grouped: Record<string, typeof rows> = {};
+  for (const row of rows) {
+    if (!grouped[row.clientId]) grouped[row.clientId] = [];
+    grouped[row.clientId].push(row);
+  }
+  return grouped;
 }
 
 export async function getClientChatHistory(clientId: string) {

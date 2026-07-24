@@ -114,7 +114,7 @@ export default function ChatClient({ initialMessages, clientId }: ChatClientProp
         <div
           ref={scrollRef}
           className="scrollbar-none flex-1 overflow-y-auto bg-[#f8fafc] px-4 py-4 sm:px-6"
-          style={{ height: "calc(100vh - theme(spacing.16))" }}
+          style={{ height: "calc(100vh - 4rem)" }}
         >
           {messages.length === 0 ? (
             <div className="flex h-full items-center justify-center">

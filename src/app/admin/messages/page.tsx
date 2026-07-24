@@ -1,4 +1,4 @@
-import { getAdminChatThreads, getChatMessagesByClient } from "@/features/messages/queries";
+import { getAdminChatThreads, getChatMessagesByClientIds } from "@/features/messages/queries";
 import { MessagingDeskLive } from "@/features/messages/components/messaging-desk-live";
 
 interface Message {
@@ -12,18 +12,15 @@ interface Message {
 export default async function AdminMessagesPage() {
   const threads = await getAdminChatThreads();
 
-  const allMessages: Record<string, Message[]> = {};
+  const clientIds = threads.map((t) => t.id);
+  const allMessages = clientIds.length > 0 ? await getChatMessagesByClientIds(clientIds) : {};
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000);
   const notificationBadges: Record<string, number> = {};
-
-  for (const thread of threads) {
-    const msgs = await getChatMessagesByClient(thread.id);
-    allMessages[thread.id] = msgs;
-
-    const unreadCount = msgs.filter(
-      (m) => m.senderRole === "CLIENT" && new Date(m.createdAt) > new Date(Date.now() - 7 * 86400000),
-    ).length;
+  for (const [clientId, msgs] of Object.entries(allMessages)) {
+    const unreadCount = msgs.filter((m) => m.senderRole === "CLIENT" && new Date(m.createdAt) > sevenDaysAgo).length;
     if (unreadCount > 0) {
-      notificationBadges[thread.id] = unreadCount;
+      notificationBadges[clientId] = unreadCount;
     }
   }
 

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { getClientPendingApprovalsCount } from "@/features/approvals/queries";
 import { getAgencyMessagesCount } from "@/features/messages/queries";
 import { getClientIdByEmail } from "@/features/clients/queries";
@@ -7,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const clientId = await getClientIdByEmail("ahmed@clothing.com");
-  if (!clientId) throw new Error("Client not found");
+  if (!clientId) notFound();
 
   const [pendingApprovals, unreadMessages] = await Promise.all([
     getClientPendingApprovalsCount(clientId),

@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { DollarSign, Mail, Percent, BarChart3 } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { RevenueChart } from "@/components/revenue-chart";
@@ -6,7 +7,7 @@ import { getClientIdByEmail } from "@/features/clients/queries";
 
 export default async function ClientDashboardPage() {
   const clientId = await getClientIdByEmail("ahmed@clothing.com");
-  if (!clientId) throw new Error("Client not found");
+  if (!clientId) notFound();
 
   const [campaigns, stats, monthlyTrends] = await Promise.all([
     getCampaignsByClientId(clientId),
