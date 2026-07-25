@@ -1,24 +1,14 @@
-# Current Feature: Typesafe NextAuth v5 & Drizzle Edge Protection Gateway (Phase 1)
+# Current Feature
 
-## Status: Completed
+## Status: Complete
 
 ## Goals
 
-- [ ] Create `src/auth.config.ts` — edge-compatible strategy bridge with JWT strategy, Credentials + GitHub OAuth providers, and auth callback redirecting unauthenticated users from `/admin/*` and `/client/*` to `/login`
-- [ ] Create `src/auth.ts` — full orchestration engine combining auth config with DrizzleAdapter, JWT callback injecting `role`/`companyName`/`id`, and session callback exposing them to the client
-- [ ] Create `src/app/api/auth/[...nextauth]/route.ts` — App Router route handler exporting `GET` and `POST` from the auth handlers
-- [ ] Create `src/middleware.ts` — global edge middleware using `NextAuth(authConfig).auth` with matcher targeting `/admin/:path*` and `/client/:path*`
-- [ ] Create `src/types/next-auth.d.ts` — extend NextAuth module types adding `role` (`"ADMIN" | "CLIENT"`), `companyName`, and `id` to `User` and `Session`
-- [ ] Verify role-based routing: `ceo@zylora.com` → `/admin/dashboard`, `ahmed@clothing.com` → `/client/dashboard`
-- [ ] Ensure all password validation executes within try/catch scopes
-- [ ] Zero `any` types — strict TypeScript throughout
+<!-- Add goals here -->
 
 ## Notes
 
-- `auth.config.ts` must NOT import the Drizzle database client or any database instances (edge runtime bundle constraint)
-- References: `@context/project-overview.md`, `src/db/schema.ts`, `@context/coding-standards.md`
-- Session strategy hard-set to `"jwt"`
-- Password hashing via `bcryptjs`
+<!-- Add notes here -->
 
 ## History
 
@@ -53,3 +43,5 @@
 - **2026-07-24** — Administrative Onboarded Clients Ledger (Phase 2 Component Upgrade) implemented on `feature/admin-clients-live`. Created `src/features/clients/queries.ts` with `getOnboardedClientsWithMetrics` — Drizzle left join aggregating campaign count and total revenue per CLIENT user from Neon PostgreSQL. Created `src/features/clients/actions.ts` with `onboardNewClientAction` — server action with bcryptjs 12-round password hashing, DB insert, and Resend email delivery of temporary credentials. Created `src/features/clients/components/clients-live-table.tsx` — interactive client component with search/filter, scroll buttons, live stat cards, and onboard modal dialog bound to the server action. Refactored `src/app/admin/dashboard/page.tsx` into an async server component hydrating live data. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types, empty state placeholder. Built per `context/features/admin-clients-spec.md`.
 
 - **2026-07-24** — Quick Win — N+1 Query Optimization & Low-Risk Fixes implemented on `feature/quick-win-n1-query-optimization-in-admin-messages`. Resolved H-2 N+1 query pattern in admin messages page by introducing `getChatMessagesByClientIds()` with Drizzle `inArray` — reducing DB round-trips from N+1 to 2. Applied low-risk cleanups: updated boilerplate metadata to Zylora branding (L-2), fixed invalid `theme(spacing.16)` runtime CSS in chat-client.tsx (L-3), replaced `throw Error` with proper `notFound()` calls for missing clients (L-4), and added graceful Neon pool shutdown handlers for SIGTERM/SIGINT (L-5). Built per automated codebase scanner findings.
+
+- **2026-07-26** — Typesafe NextAuth v5 & Drizzle Edge Protection Gateway (Phase 1) implemented on `feature/typesafe-nextauth-v5-drizzle-edge-protection-gateway-phase-1`. Integrated NextAuth v5 (beta.32) with JWT strategy, Credentials + GitHub OAuth providers, and DrizzleAdapter. Created edge-compatible `auth.config.ts`, orchestration engine `auth.ts`, App Router route handler, global middleware with role-based routing (`/admin/*`, `/client/*` → `/login`), and extended NextAuth types with `role`, `companyName`, `id`. Reworked `/login` page with real `signIn` credentials flow, loading state (`Loader2` spinner), and simulation injection for ADMIN/CLIENT roles. Added `AuthSessionProvider` wrapping root layout. Applied Drizzle schema for NextAuth (`account`, `session`, `verificationToken` tables) plus `emailVerified`/`image` columns on `users`, with migrations 0002 and 0003. Downgraded `drizzle-orm` to `^0.38.3` for adapter compatibility. Removed stale mock-based `clients-data-table` and `messaging-desk` components. Guarded `process.on` shutdown handlers with `typeof` check. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/auth-spec-files/auth-phase-1-spec.md`.
