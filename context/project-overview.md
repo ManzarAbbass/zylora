@@ -28,7 +28,7 @@ Zylora consolidates this entire corporate B2B operational pipeline into a unifie
 ## Tech Stack
 
 |Layer|Choice|
-|Framewor|kNext.js 15 / React 19 (App Router, Server Actions ecosystem)|
+|Framework|Next.js 15 / React 19 (App Router, Server Actions ecosystem)|
 |Language|TypeScript|
 |Database|Neon PostgreSQL (Decoupled Serverless Cloud Stack)|
 |ORM|Drizzle ORM|
@@ -144,6 +144,16 @@ Zylora consolidates this entire corporate B2B operational pipeline into a unifie
   clientId: uuid('client_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   senderRole: roleEnum('sender_role').notNull(), // Tracks sender identification (ADMIN or CLIENT)
   messageText: text('message_text').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+```
+### MonthlyTrend
+```export const monthlyTrends = pgTable('monthly_trends', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  clientId: uuid('client_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  month: text('month').notNull(),                  // e.g., "Jan", "Feb", "Mar"
+  revenue: numeric('revenue', { precision: 12, scale: 2 }).default('0.00').notNull(),
+  spend: numeric('spend', { precision: 12, scale: 2 }).default('0.00').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 ```

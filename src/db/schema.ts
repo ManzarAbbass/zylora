@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, uuid, text, integer, numeric, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, text, integer, numeric, timestamp, primaryKey } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["ADMIN", "CLIENT"]);
 
@@ -11,6 +11,8 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   role: userRoleEnum("role").default("CLIENT").notNull(),
   companyName: text("company_name"),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
   packageName: text("package_name"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -51,6 +53,50 @@ export const monthlyTrends = pgTable("monthly_trends", {
   spend: numeric("spend", { precision: 12, scale: 2 }).default("0.00").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const accounts = pgTable(
+  "account",
+  {
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<string>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  }),
+);
+
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (vt) => ({
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
+  }),
+);
 
 export const messages = pgTable("messages", {
   id: uuid("id").defaultRandom().primaryKey(),

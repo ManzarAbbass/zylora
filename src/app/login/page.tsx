@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, TrendingUp, BarChart3, Shield, Users } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { Mail, Lock, TrendingUp, BarChart3, Shield, Users, Loader2 } from "lucide-react";
 import { Toaster, toast } from "sonner";
 
 interface Shape {
@@ -56,12 +57,54 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function simulateLogin(cred: { email: string; route: string; toastMsg: string }) {
-    setEmail(cred.email);
-    setPassword("••••••••••••");
-    toast.success(cred.toastMsg);
-    router.push(cred.route);
+  async function handleSignIn(emailVal: string, passwordVal: string) {
+    setLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        email: emailVal,
+        password: passwordVal,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error("Invalid credentials. Please verify your access keys.");
+        return;
+      }
+
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
+
+      if (session?.user?.role === "ADMIN") {
+        toast.success("Welcome back, Zylora Admin.");
+        router.push("/admin/dashboard");
+      } else {
+        toast.success("Welcome back.");
+        router.push("/client/dashboard");
+      }
+    } catch {
+      toast.error("Authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await handleSignIn(email, password);
+  }
+
+  async function simulateLogin(role: "ADMIN" | "CLIENT") {
+    if (role === "ADMIN") {
+      setEmail("ceo@zylora.com");
+      setPassword("ZyloraAdmin2026!");
+      await handleSignIn("ceo@zylora.com", "ZyloraAdmin2026!");
+    } else {
+      setEmail("ahmed@clothing.com");
+      setPassword("AhmedClient123!");
+      await handleSignIn("ahmed@clothing.com", "AhmedClient123!");
+    }
   }
 
   return (
@@ -148,7 +191,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label
                   htmlFor="email"
@@ -164,6 +207,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
+                    required
                     className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#124768] transition focus:ring-2"
                   />
                 </div>
@@ -184,6 +228,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
+                    required
                     className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#124768] transition focus:ring-2"
                   />
                 </div>
@@ -191,40 +236,32 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-[#124768] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#124768]/90 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-2"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#124768] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#124768]/90 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-2 disabled:opacity-60"
               >
-                Authenticate Credentials
+                {loading && <Loader2 className="size-4 animate-spin" />}
+                {loading ? "Authenticating..." : "Authenticate Credentials"}
               </button>
             </form>
 
             <div className="mt-8 border-t border-slate-100 pt-6">
               <p className="mb-3 text-center text-xs font-medium text-slate-400">
-                🛠️ Internal Workflow Simulation Engine
+                Internal Workflow Simulation Engine
               </p>
               <div className="flex flex-col gap-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    simulateLogin({
-                      email: "admin@zylora.com",
-                      route: "/admin/dashboard",
-                      toastMsg: "Admin credentials injected. Redirecting...",
-                    })
-                  }
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
+                  disabled={loading}
+                  onClick={() => simulateLogin("ADMIN")}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1 disabled:opacity-60"
                 >
                   Simulate Zylora Agency Admin
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    simulateLogin({
-                      email: "ahmed@clothing.com",
-                      route: "/client/dashboard",
-                      toastMsg: "Client session profile loaded. Redirecting...",
-                    })
-                  }
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1"
+                  disabled={loading}
+                  onClick={() => simulateLogin("CLIENT")}
+                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1 disabled:opacity-60"
                 >
                   Simulate Ahmed Clothing Profile
                 </button>

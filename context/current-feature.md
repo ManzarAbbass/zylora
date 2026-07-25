@@ -1,16 +1,24 @@
-# Current Feature
+# Current Feature: Typesafe NextAuth v5 & Drizzle Edge Protection Gateway (Phase 1)
 
-## Status
-
-**Completed**
+## Status: Completed
 
 ## Goals
 
-<!-- Feature goals will be restored when this feature is revisited or a new feature begins. -->
+- [ ] Create `src/auth.config.ts` — edge-compatible strategy bridge with JWT strategy, Credentials + GitHub OAuth providers, and auth callback redirecting unauthenticated users from `/admin/*` and `/client/*` to `/login`
+- [ ] Create `src/auth.ts` — full orchestration engine combining auth config with DrizzleAdapter, JWT callback injecting `role`/`companyName`/`id`, and session callback exposing them to the client
+- [ ] Create `src/app/api/auth/[...nextauth]/route.ts` — App Router route handler exporting `GET` and `POST` from the auth handlers
+- [ ] Create `src/middleware.ts` — global edge middleware using `NextAuth(authConfig).auth` with matcher targeting `/admin/:path*` and `/client/:path*`
+- [ ] Create `src/types/next-auth.d.ts` — extend NextAuth module types adding `role` (`"ADMIN" | "CLIENT"`), `companyName`, and `id` to `User` and `Session`
+- [ ] Verify role-based routing: `ceo@zylora.com` → `/admin/dashboard`, `ahmed@clothing.com` → `/client/dashboard`
+- [ ] Ensure all password validation executes within try/catch scopes
+- [ ] Zero `any` types — strict TypeScript throughout
 
 ## Notes
 
-<!-- Implementation notes and cross-references will be restored when this feature is revisited or a new feature begins. -->
+- `auth.config.ts` must NOT import the Drizzle database client or any database instances (edge runtime bundle constraint)
+- References: `@context/project-overview.md`, `src/db/schema.ts`, `@context/coding-standards.md`
+- Session strategy hard-set to `"jwt"`
+- Password hashing via `bcryptjs`
 
 ## History
 

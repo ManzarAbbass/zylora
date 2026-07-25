@@ -1,0 +1,29 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "neon": {
+      "type": "remote",
+      "url": "https://mcp.neon.tech/mcp?projectId=dawn-poetry-77905877",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer napi_512ew3iti2z0cagwmkuypiumzqgck9s8l5b91g7nsnmkdsg8f2d5hk128r4lv1ua"
+      }
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true,
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-96819c33-c663-477f-9c90-8604b54dc3f4"
+      }
+    },
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@playwright/mcp@latest"
+      ],
+      "enabled": true
+    }
+  }
+}
