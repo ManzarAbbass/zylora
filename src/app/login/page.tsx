@@ -69,7 +69,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error("Invalid credentials. Please verify your access keys.");
+        toast.error("Invalid credentials provided. Please double-check your security tokens.");
         return;
       }
 
@@ -93,18 +93,6 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     await handleSignIn(email, password);
-  }
-
-  async function simulateLogin(role: "ADMIN" | "CLIENT") {
-    if (role === "ADMIN") {
-      setEmail("ceo@zylora.com");
-      setPassword("ZyloraAdmin2026!");
-      await handleSignIn("ceo@zylora.com", "ZyloraAdmin2026!");
-    } else {
-      setEmail("ahmed@clothing.com");
-      setPassword("AhmedClient123!");
-      await handleSignIn("ahmed@clothing.com", "AhmedClient123!");
-    }
   }
 
   return (
@@ -243,30 +231,6 @@ export default function LoginPage() {
                 {loading ? "Authenticating..." : "Authenticate Credentials"}
               </button>
             </form>
-
-            <div className="mt-8 border-t border-slate-100 pt-6">
-              <p className="mb-3 text-center text-xs font-medium text-slate-400">
-                Internal Workflow Simulation Engine
-              </p>
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => simulateLogin("ADMIN")}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1 disabled:opacity-60"
-                >
-                  Simulate Zylora Agency Admin
-                </button>
-                <button
-                  type="button"
-                  disabled={loading}
-                  onClick={() => simulateLogin("CLIENT")}
-                  className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#124768] focus:ring-offset-1 disabled:opacity-60"
-                >
-                  Simulate Ahmed Clothing Profile
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>

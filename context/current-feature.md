@@ -1,14 +1,29 @@
-# Current Feature
+# Current Feature: Full B2B Credentials Token Validation Engine (Phase 2)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Extend `src/auth.config.ts` with a Credentials provider placeholder (`authorize: async () => null`) inside the `providers` array — no database client imports in edge file
+- [ ] Override Credentials provider in `src/auth.ts` with Zod validation (`z.string().email()`, `z.string().min(8)`) for incoming login payloads
+- [ ] Query Neon PostgreSQL `users` table via Drizzle `eq(users.email, validatedEmail)` — throw NextAuth exception if no row found
+- [ ] Validate password with `bcryptjs.compare()` against stored hash
+- [ ] Return typesafe user profile object (`id`, `name`, `email`, `role`) on successful authentication
+- [ ] Strip all temporary simulation tester buttons from `src/app/login/page.tsx`
+- [ ] Bind standard email/password form fields with `useState` or Server Actions on login page
+- [ ] Wire submission to `signIn("credentials", { email, password, redirect: true })`
+- [ ] Catch authentication errors and display human-readable Sonner toasts: `"Invalid credentials provided. Please double-check your security tokens."`
+- [ ] Verify `ceo@zylora.com` / `ZyloraAdmin2026!` redirects to `/admin/dashboard`
+- [ ] Verify `ahmed@clothing.com` / `AhmedClient123!` redirects to `/client/dashboard`
+- [ ] Ensure invalid credentials display Sonner error without crashing
 
 ## Notes
 
-<!-- Add notes here -->
+- Refer to `@context/features/auth-spec-files/auth-phase-2-spec.md` for full spec
+- Cross-verify with `@context/project-overview.md` — no public registration allowed
+- Seeded test credentials in `src/db/seed.ts`: `ceo@zylora.com` (ADMIN) and `ahmed@clothing.com` (CLIENT)
+- Strictly blocks standalone `/api/auth/register` endpoints or sign-up page paths
+- Phase 1 NextAuth integration already in place — this phase activates real credentials validation
 
 ## History
 
