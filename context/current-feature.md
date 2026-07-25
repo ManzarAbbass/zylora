@@ -1,29 +1,14 @@
-# Current Feature: Full B2B Credentials Token Validation Engine (Phase 2)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Extend `src/auth.config.ts` with a Credentials provider placeholder (`authorize: async () => null`) inside the `providers` array — no database client imports in edge file
-- [ ] Override Credentials provider in `src/auth.ts` with Zod validation (`z.string().email()`, `z.string().min(8)`) for incoming login payloads
-- [ ] Query Neon PostgreSQL `users` table via Drizzle `eq(users.email, validatedEmail)` — throw NextAuth exception if no row found
-- [ ] Validate password with `bcryptjs.compare()` against stored hash
-- [ ] Return typesafe user profile object (`id`, `name`, `email`, `role`) on successful authentication
-- [ ] Strip all temporary simulation tester buttons from `src/app/login/page.tsx`
-- [ ] Bind standard email/password form fields with `useState` or Server Actions on login page
-- [ ] Wire submission to `signIn("credentials", { email, password, redirect: true })`
-- [ ] Catch authentication errors and display human-readable Sonner toasts: `"Invalid credentials provided. Please double-check your security tokens."`
-- [ ] Verify `ceo@zylora.com` / `ZyloraAdmin2026!` redirects to `/admin/dashboard`
-- [ ] Verify `ahmed@clothing.com` / `AhmedClient123!` redirects to `/client/dashboard`
-- [ ] Ensure invalid credentials display Sonner error without crashing
+<!-- Add goals here -->
 
 ## Notes
 
-- Refer to `@context/features/auth-spec-files/auth-phase-2-spec.md` for full spec
-- Cross-verify with `@context/project-overview.md` — no public registration allowed
-- Seeded test credentials in `src/db/seed.ts`: `ceo@zylora.com` (ADMIN) and `ahmed@clothing.com` (CLIENT)
-- Strictly blocks standalone `/api/auth/register` endpoints or sign-up page paths
-- Phase 1 NextAuth integration already in place — this phase activates real credentials validation
+<!-- Add notes here -->
 
 ## History
 
@@ -60,3 +45,5 @@
 - **2026-07-24** — Quick Win — N+1 Query Optimization & Low-Risk Fixes implemented on `feature/quick-win-n1-query-optimization-in-admin-messages`. Resolved H-2 N+1 query pattern in admin messages page by introducing `getChatMessagesByClientIds()` with Drizzle `inArray` — reducing DB round-trips from N+1 to 2. Applied low-risk cleanups: updated boilerplate metadata to Zylora branding (L-2), fixed invalid `theme(spacing.16)` runtime CSS in chat-client.tsx (L-3), replaced `throw Error` with proper `notFound()` calls for missing clients (L-4), and added graceful Neon pool shutdown handlers for SIGTERM/SIGINT (L-5). Built per automated codebase scanner findings.
 
 - **2026-07-26** — Typesafe NextAuth v5 & Drizzle Edge Protection Gateway (Phase 1) implemented on `feature/typesafe-nextauth-v5-drizzle-edge-protection-gateway-phase-1`. Integrated NextAuth v5 (beta.32) with JWT strategy, Credentials + GitHub OAuth providers, and DrizzleAdapter. Created edge-compatible `auth.config.ts`, orchestration engine `auth.ts`, App Router route handler, global middleware with role-based routing (`/admin/*`, `/client/*` → `/login`), and extended NextAuth types with `role`, `companyName`, `id`. Reworked `/login` page with real `signIn` credentials flow, loading state (`Loader2` spinner), and simulation injection for ADMIN/CLIENT roles. Added `AuthSessionProvider` wrapping root layout. Applied Drizzle schema for NextAuth (`account`, `session`, `verificationToken` tables) plus `emailVerified`/`image` columns on `users`, with migrations 0002 and 0003. Downgraded `drizzle-orm` to `^0.38.3` for adapter compatibility. Removed stale mock-based `clients-data-table` and `messaging-desk` components. Guarded `process.on` shutdown handlers with `typeof` check. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/auth-spec-files/auth-phase-1-spec.md`.
+
+- **2026-07-26** — Full B2B Credentials Token Validation Engine (Phase 2) implemented on `feature/full-b2b-credentials-token-validation-engine-phase-2`. Extended `src/auth.config.ts` with Credentials provider edge placeholder (`id: "edge-placeholder"`). Added Zod validation (`z.string().email()`, `z.string().min(8)`) to `src/auth.ts` with Drizzle `eq()` user lookup and `bcryptjs.compare()` password verification. Stripped simulation tester buttons from login page, bound standard form with `signIn("credentials")` flow, and wired Sonner error toasts with spec-matching copy. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/auth-spec-files/auth-phase-2-spec.md`.
