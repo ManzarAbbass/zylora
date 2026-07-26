@@ -12,10 +12,10 @@ export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) 
   const [isAdmin, setIsAdmin] = useState(role === "ADMIN");
 
   return (
-    <header className="flex items-center gap-4 border-b border-slate-100 bg-white px-4 py-3 sm:gap-6 sm:px-6">
+    <header className="flex items-center gap-4 border-b border-slate-200 bg-[#f8fafc] px-4 py-3 sm:gap-6 sm:px-6">
       <button
         onClick={onMenuToggle}
-        className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 lg:hidden"
+        className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700 lg:hidden"
       >
         <Menu className="size-5" />
       </button>
@@ -34,18 +34,18 @@ export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) 
         <input
           type="text"
           placeholder="Search clients, campaigns..."
-          className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] py-2 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#124768] transition focus:ring-2"
+          className="w-full rounded-lg border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
         />
       </div>
 
       <div className="flex items-center gap-3">
         <button
           onClick={() => setIsAdmin(!isAdmin)}
-          className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+          className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
         >
           <span
             className={`inline-flex h-4 w-7 items-center rounded-full border transition-colors ${
-              isAdmin ? "border-[#124768] bg-[#124768]" : "border-slate-300 bg-slate-100"
+              isAdmin ? "border-[#3B5FE0] bg-[#3B5FE0]" : "border-slate-300 bg-slate-200"
             }`}
           >
             <span
@@ -56,7 +56,7 @@ export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) 
           </span>
           {isAdmin ? "Admin" : "Client"}
         </button>
-        <button className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
+        <button className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700">
           <Bell className="size-4" />
         </button>
       </div>
