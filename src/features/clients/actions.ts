@@ -19,10 +19,12 @@ const resend = process.env.RESEND_API_KEY
 export async function onboardNewClientAction(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
+  const role = formData.get("role") as "CLIENT" | "ADMIN";
+  const companyName = formData.get("companyName") as string;
   const packageTier = formData.get("packageTier") as string;
 
-  if (!name || !email || !packageTier) {
-    return { success: false as const, data: null, error: "All fields are required." };
+  if (!name || !email || !role) {
+    return { success: false as const, data: null, error: "Name, email, and role are required." };
   }
 
   try {
@@ -33,17 +35,25 @@ export async function onboardNewClientAction(formData: FormData) {
       name,
       email,
       password: hashedPassword,
-      role: "CLIENT",
-      companyName: null,
-      packageName: packageTier,
+      role,
+      companyName: companyName || null,
+      packageName: role === "ADMIN" ? null : packageTier,
     });
+
+    const isAdmin = role === "ADMIN";
 
     if (resend) {
       await resend.emails.send({
-        from: "Zylora <onboarding@zylora.com>",
+        from: "onboarding@resend.dev",
         to: email,
-        subject: "Your Zylora Client Portal Access",
-        html: `<p>Welcome to Zylora, ${name}!</p>
+        subject: isAdmin ? "Your Zylora Administrator Access" : "Your Zylora Client Portal Access",
+        html: isAdmin
+          ? `<p>Hello ${name},</p>
+<p>You have been onboarded as an Agency Administrator for Zylora Portal.</p>
+<p><strong>Temporary Access Credentials:</strong></p>
+<p>Email: ${email}<br/>Password: ${tempPassword}</p>
+<p>Use your temporary access key to log in at <a href="${process.env.AUTH_URL || "http://localhost:3000"}/login">the portal</a>.</p>`
+          : `<p>Welcome to Zylora, ${name}!</p>
 <p>Your account has been provisioned with the <strong>${packageTier}</strong> package.</p>
 <p><strong>Temporary Access Credentials:</strong></p>
 <p>Email: ${email}<br/>Password: ${tempPassword}</p>
@@ -57,7 +67,7 @@ export async function onboardNewClientAction(formData: FormData) {
     return {
       success: false as const,
       data: null,
-      error: error instanceof Error ? error.message : "Failed to onboard client.",
+      error: error instanceof Error ? error.message : "Failed to onboard user.",
     };
   }
 }

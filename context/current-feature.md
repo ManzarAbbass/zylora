@@ -1,14 +1,27 @@
-# Current Feature
+# Current Feature: Premium Session Dropdowns & Secure Sign-Out Core (Phase 3)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- Create `src/components/ui/user-avatar.tsx` — typesafe component with optional `image` string and required `name` string; renders `<img>` if image exists, otherwise extracts uppercase initials (e.g. "Ahmed Clothing" → "AC") in a muted circular badge
+- Integrate real `auth()` session data (`session.user.name`, `session.user.email`, `session.user.role`) into the bottom account block of `src/app/admin/layout.tsx` and `src/app/client/layout.tsx`, replacing hardcoded strings
+- Wrap each sidebar bottom profile block in a Shadcn UI Popover/Dropdown Menu with:
+  - Line 1: Current user email (muted fine typography)
+  - Line 2: `Sign Out from Workspace` button (danger muted red text)
+- Wire the Sign Out button to a `"use server"` action calling `signOut({ redirectTo: "/login" })` from `@/auth`
+- Ensure sign-out clears JWT tokens and redirects to `/login` with full browser navigation
+- Apply Premium Corporate Light Slate theme: white `bg-[#ffffff]` dropdown overlays, `border-slate-100` dividers, `shadow-md`, `hover:bg-slate-50` row states, muted red danger text
+- No registration pages/public signup; zero `any` types; strict TypeScript; build clean
 
 ## Notes
 
-<!-- Add notes here -->
+- **Target Core Files:** `src/app/login/page.tsx` (Polish), `src/app/admin/layout.tsx` (Update), `src/app/client/layout.tsx` (Update)
+- **Module Domain:** Session UI Hydration, Reusable Custom Avatars, NextAuth SignOut Mutations
+- **Visual Design:** Premium Corporate Light Slate — white dropdown cards, fine hairline `border-slate-100`, `shadow-md`, `hover:bg-slate-50`, muted red for Sign Out danger path
+- **Auth Reference:** Uses existing NextAuth v5 setup from Phase 1/2 (`@/auth` exports `auth`, `signIn`, `signOut`)
+- **Key Constraint:** Strictly rejects any registration page or public signup endpoint generation. Enforce Closed B2B borders
+- **Verification:** Login → avatar renders in sidebar → click popover → email visible → Sign Out → redirect to `/login` with cleared session
 
 ## History
 

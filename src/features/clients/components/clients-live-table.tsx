@@ -54,7 +54,9 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState("");
   const [onboardOpen, setOnboardOpen] = useState(false);
+  const [dropdownTarget, setDropdownTarget] = useState<"header" | "table" | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [onboardRole, setOnboardRole] = useState<"CLIENT" | "ADMIN">("CLIENT");
 
   function scrollRight() {
     scrollRef.current?.scrollBy({ left: scrollRef.current.clientWidth * 0.75, behavior: "smooth" });
@@ -92,8 +94,9 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
     const result = await onboardNewClientAction(formData);
     setSubmitting(false);
     if (result.success) {
-      toast.success("Client onboarded successfully. Credentials sent via email.");
+      toast.success(onboardRole === "ADMIN" ? "Administrator onboarded successfully. Credentials sent via email." : "Client onboarded successfully. Credentials sent via email.");
       setOnboardOpen(false);
+      setOnboardRole("CLIENT");
       form.reset();
     } else {
       toast.error(result.error || "Failed to onboard client.");
@@ -107,12 +110,37 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
           <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Operational Overview</h1>
           <p className="mt-1 text-sm text-slate-500">Monitor your agency&apos;s performance across all client accounts.</p>
         </div>
-        <button
-          onClick={() => setOnboardOpen(true)}
-          className="w-full rounded-lg bg-[#124768] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#124768]/90 sm:w-fit"
-        >
-          + Onboard Client
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setDropdownTarget(dropdownTarget === "header" ? null : "header")}
+            className="w-full rounded-lg bg-[#124768] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#124768]/90 sm:w-fit"
+          >
+            + Onboard
+          </button>
+          {dropdownTarget === "header" && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setDropdownTarget(null)} />
+              <div className="absolute right-0 top-full z-50 mt-1 w-56 overflow-hidden rounded-lg border border-slate-100 bg-[#ffffff] shadow-md">
+                <button
+                  type="button"
+                  onClick={() => { setOnboardRole("CLIENT"); setDropdownTarget(null); setOnboardOpen(true); }}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                >
+                  <div className="flex size-7 items-center justify-center rounded-md bg-blue-100 text-xs font-bold text-blue-600">C</div>
+                  Corporate Client
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setOnboardRole("ADMIN"); setDropdownTarget(null); setOnboardOpen(true); }}
+                  className="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                >
+                  <div className="flex size-7 items-center justify-center rounded-md bg-indigo-100 text-xs font-bold text-indigo-600">A</div>
+                  Agency Administrator
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -138,12 +166,37 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
                 className="w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#124768] focus:outline-none sm:w-56"
               />
             </div>
-            <button
-              onClick={() => setOnboardOpen(true)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-[#124768] hover:text-white sm:w-auto"
-            >
-              + Onboard Client
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setDropdownTarget(dropdownTarget === "table" ? null : "table")}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-[#124768] hover:text-white sm:w-auto"
+              >
+                + Onboard
+              </button>
+              {dropdownTarget === "table" && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setDropdownTarget(null)} />
+                  <div className="absolute right-0 top-full z-50 mt-1 w-56 overflow-hidden rounded-lg border border-slate-100 bg-[#ffffff] shadow-md">
+                    <button
+                      type="button"
+                      onClick={() => { setOnboardRole("CLIENT"); setDropdownTarget(null); setOnboardOpen(true); }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <div className="flex size-7 items-center justify-center rounded-md bg-blue-100 text-xs font-bold text-blue-600">C</div>
+                      Corporate Client
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setOnboardRole("ADMIN"); setDropdownTarget(null); setOnboardOpen(true); }}
+                      className="flex w-full items-center gap-3 border-t border-slate-100 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <div className="flex size-7 items-center justify-center rounded-md bg-indigo-100 text-xs font-bold text-indigo-600">A</div>
+                      Agency Administrator
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -233,7 +286,7 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-full max-w-md rounded-xl border border-slate-100 bg-white p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">Onboard New Client</h3>
+              <h3 className="text-lg font-semibold text-slate-900">Onboard {onboardRole === "ADMIN" ? "Agency Administrator" : "Corporate Client"}</h3>
               <button
                 onClick={() => setOnboardOpen(false)}
                 className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
@@ -243,7 +296,7 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">Client Name</label>
+                <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">Full Name</label>
                 <input
                   id="name"
                   name="name"
@@ -265,19 +318,38 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
                 />
               </div>
               <div>
-                <label htmlFor="packageTier" className="mb-1 block text-sm font-medium text-slate-700">Package Tier</label>
-                <select
-                  id="packageTier"
-                  name="packageTier"
-                  required
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-[#124768] focus:outline-none"
-                >
-                  <option value="">Select a package</option>
-                  <option value="Enterprise">Enterprise</option>
-                  <option value="Pro">Pro</option>
-                  <option value="Growth">Growth</option>
-                </select>
+                <label htmlFor="companyName" className="mb-1 block text-sm font-medium text-slate-700">Company Name</label>
+                <input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#124768] focus:outline-none"
+                  placeholder={onboardRole === "ADMIN" ? "e.g. Zylora" : "e.g. Ahmed Clothing"}
+                />
               </div>
+              <input type="hidden" name="role" value={onboardRole} />
+              <div className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-3">
+                <p className="text-xs font-medium text-slate-500">System Access Role</p>
+                <p className="text-sm font-semibold text-slate-800">
+                  {onboardRole === "ADMIN" ? "Agency Administrator" : "Corporate Client"}
+                </p>
+              </div>
+              {onboardRole === "CLIENT" && (
+                <div>
+                  <label htmlFor="packageTier" className="mb-1 block text-sm font-medium text-slate-700">Package Tier</label>
+                  <select
+                    id="packageTier"
+                    name="packageTier"
+                    required={onboardRole === "CLIENT"}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-[#124768] focus:outline-none"
+                  >
+                    <option value="">Select a package</option>
+                    <option value="Enterprise">Enterprise</option>
+                    <option value="Pro">Pro</option>
+                    <option value="Growth">Growth</option>
+                  </select>
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={submitting}

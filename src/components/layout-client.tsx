@@ -9,9 +9,12 @@ interface LayoutClientProps {
   role?: "ADMIN" | "CLIENT";
   pendingApprovals?: number;
   unreadMessages?: number;
+  userName?: string;
+  userEmail?: string;
+  userImage?: string | null;
 }
 
-export function LayoutClient({ children, role = "ADMIN", pendingApprovals, unreadMessages }: LayoutClientProps) {
+export function LayoutClient({ children, role = "ADMIN", pendingApprovals, unreadMessages, userName, userEmail, userImage }: LayoutClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -33,6 +36,9 @@ export function LayoutClient({ children, role = "ADMIN", pendingApprovals, unrea
           onClose={() => setSidebarOpen(false)}
           pendingApprovals={pendingApprovals}
           unreadMessages={unreadMessages}
+          userName={userName}
+          userEmail={userEmail}
+          userImage={userImage}
         />
       </div>
 
@@ -41,6 +47,9 @@ export function LayoutClient({ children, role = "ADMIN", pendingApprovals, unrea
           role={role}
           pendingApprovals={pendingApprovals}
           unreadMessages={unreadMessages}
+          userName={userName}
+          userEmail={userEmail}
+          userImage={userImage}
         />
       </div>
 

@@ -14,7 +14,12 @@ import {
   PanelLeftOpen,
   Kanban,
   X,
+  LogOut,
+  User,
 } from "lucide-react";
+import { UserAvatar } from "./user-avatar";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import { signOutAction } from "@/features/auth/actions";
 
 const adminNavItems = [
   { icon: LayoutDashboard, label: "Operational Overview", href: "/admin/dashboard", badge: null },
@@ -22,7 +27,7 @@ const adminNavItems = [
   { icon: CheckCircle2, label: "Asset Approvals", href: "/admin/approvals", badge: 4 },
   { icon: FileText, label: "Financial Reports", href: "/admin/reports", badge: null },
   { icon: MessageSquare, label: "Communications", href: "/admin/messages", badge: 3 },
-  { icon: Settings, label: "Settings", href: "/admin/settings", badge: null },
+  { icon: Settings, label: "Settings", href: "/settings", badge: null },
 ];
 
 const clientNavItems = [
@@ -30,7 +35,7 @@ const clientNavItems = [
   { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
   { icon: FileText, label: "Performance Reports", href: "/client/reports", badge: null },
   { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: 1 },
-  { icon: Settings, label: "Workspace", href: "/client/workspace", badge: null },
+  { icon: Settings, label: "Settings", href: "/settings", badge: null },
 ];
 
 interface AdminSidebarProps {
@@ -38,10 +43,14 @@ interface AdminSidebarProps {
   role?: "ADMIN" | "CLIENT";
   pendingApprovals?: number;
   unreadMessages?: number;
+  userName?: string;
+  userEmail?: string;
+  userImage?: string | null;
 }
 
-export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unreadMessages }: AdminSidebarProps) {
+export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unreadMessages, userName, userEmail, userImage }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [gearOpen, setGearOpen] = useState(false);
   const pathname = usePathname();
   const isClient = role === "CLIENT";
 
@@ -131,24 +140,81 @@ export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unread
       </div>
 
       <div className="border-t border-white/10 p-3">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/15 text-xs font-bold text-white">
-            {isClient ? "AC" : "ZA"}
-          </div>
-          {!collapsed && (
-            <>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-white">
-                  {isClient ? "Ahmed Clothing" : "Zylora Admin"}
+        <div className="flex items-center gap-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 transition hover:bg-white/5">
+                <UserAvatar name={userName ?? (isClient ? "Ahmed Clothing" : "Zylora Admin")} image={userImage} />
+                {!collapsed && (
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="truncate text-sm font-medium text-white">
+                      {userName ?? (isClient ? "Ahmed Clothing" : "Zylora Admin")}
+                    </p>
+                    <p className="truncate text-xs text-slate-300">
+                      {userEmail ?? (isClient ? "ahmed@clothing.com" : "admin@zylora.com")}
+                    </p>
+                  </div>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" side="top" className="w-64 p-0">
+              <div className="border-b border-slate-100 px-4 py-3">
+                <p className="truncate text-sm font-medium text-slate-900">
+                  {userName ?? (isClient ? "Ahmed Clothing" : "Zylora Admin")}
                 </p>
-                <p className="truncate text-xs text-slate-300">
-                  {isClient ? "Enterprise plan" : "Agency operator"}
-                </p>
+                <p className="truncate text-xs text-slate-500">{userEmail ?? ""}</p>
               </div>
-              <button className="rounded-lg p-1.5 text-slate-300 transition hover:bg-white/10 hover:text-white">
+              <Link
+                href="/profile"
+                onClick={() => document.body.click()}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+              >
+                <User className="size-4" />
+                View Profile
+              </Link>
+              <form action={signOutAction}>
+                <button
+                  type="submit"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 transition hover:bg-slate-50"
+                >
+                  <LogOut className="size-4" />
+                  Sign Out from Workspace
+                </button>
+              </form>
+            </PopoverContent>
+          </Popover>
+          {!collapsed && (
+            <div className="relative">
+              <button
+                onClick={() => setGearOpen(!gearOpen)}
+                className="rounded-lg p-1.5 text-slate-300 transition hover:bg-white/10 hover:text-white"
+              >
                 <Settings className="size-4" />
               </button>
-            </>
+              {gearOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setGearOpen(false)} />
+                  <div className="absolute bottom-full right-0 z-50 mb-1 w-44 overflow-hidden rounded-lg border border-slate-100 bg-[#ffffff] shadow-md">
+                    <Link
+                      href="/profile"
+                      onClick={() => setGearOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <User className="size-4" />
+                      Profile
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setGearOpen(false)}
+                      className="flex items-center gap-3 border-t border-slate-100 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <Settings className="size-4" />
+                      Settings
+                    </Link>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -20,7 +20,9 @@ export default {
       const isLoggedIn = !!auth?.user;
       const isOnAdmin = nextUrl.pathname.startsWith("/admin");
       const isOnClient = nextUrl.pathname.startsWith("/client");
-      if (isOnAdmin || isOnClient) {
+      const isOnSettings = nextUrl.pathname.startsWith("/settings");
+      const isOnProfile = nextUrl.pathname.startsWith("/profile");
+      if (isOnAdmin || isOnClient || isOnSettings || isOnProfile) {
         if (!isLoggedIn) return false;
       }
       return true;
