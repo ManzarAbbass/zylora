@@ -1,6 +1,6 @@
 import { sql, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users, campaigns } from "@/db/schema";
+import { users, campaigns, monthlyTrends } from "@/db/schema";
 
 export interface OnboardedClient {
   id: string;
@@ -43,4 +43,34 @@ export async function getClientIdByEmail(email: string): Promise<string | null> 
     .from(users)
     .where(eq(users.email, email));
   return user?.id ?? null;
+}
+
+export interface ExecutiveReport {
+  id: string;
+  companyName: string | null;
+  totalCampaigns: number;
+  totalSpend: string;
+  totalRevenue: string;
+  netRoi: string;
+}
+
+export async function getAdminExecutiveReports(): Promise<ExecutiveReport[]> {
+  const rows = await db
+    .select({
+      id: users.id,
+      companyName: users.companyName,
+      totalCampaigns: sql<number>`cast(count(distinct ${campaigns.id}) as int)`,
+      totalSpend: sql<string>`coalesce(cast(sum(${monthlyTrends.spend}) as varchar), '0')`,
+      totalRevenue: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
+    })
+    .from(users)
+    .innerJoin(campaigns, eq(users.id, campaigns.clientId))
+    .leftJoin(monthlyTrends, eq(users.id, monthlyTrends.clientId))
+    .where(eq(users.role, "CLIENT"))
+    .groupBy(users.id);
+
+  return rows.map((r) => ({
+    ...r,
+    netRoi: (parseFloat(r.totalRevenue) - parseFloat(r.totalSpend)).toFixed(2),
+  }));
 }

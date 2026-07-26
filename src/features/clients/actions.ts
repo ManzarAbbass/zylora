@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { getAdminExecutiveReports } from "./queries";
 
 function generateTempPassword(): string {
   return randomUUID().replace(/-/g, "").slice(0, 16);
@@ -68,6 +69,34 @@ export async function onboardNewClientAction(formData: FormData) {
       success: false as const,
       data: null,
       error: error instanceof Error ? error.message : "Failed to onboard user.",
+    };
+  }
+}
+
+export async function exportCsvReportAction() {
+  try {
+    const reports = await getAdminExecutiveReports();
+
+    const headers = ["Client Name", "Campaigns", "Total Ad Spend", "Total Revenue", "Net ROI"];
+    const rows = reports.map((r) => [
+      r.companyName ?? "Unknown",
+      String(r.totalCampaigns),
+      r.totalSpend,
+      r.totalRevenue,
+      r.netRoi,
+    ]);
+
+    const csv = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    return { success: true as const, data: csv, error: undefined };
+  } catch (error) {
+    return {
+      success: false as const,
+      data: null,
+      error: error instanceof Error ? error.message : "Failed to export CSV.",
     };
   }
 }
