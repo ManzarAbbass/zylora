@@ -1,27 +1,14 @@
-# Current Feature: Premium Session Dropdowns & Secure Sign-Out Core (Phase 3)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- Create `src/components/ui/user-avatar.tsx` — typesafe component with optional `image` string and required `name` string; renders `<img>` if image exists, otherwise extracts uppercase initials (e.g. "Ahmed Clothing" → "AC") in a muted circular badge
-- Integrate real `auth()` session data (`session.user.name`, `session.user.email`, `session.user.role`) into the bottom account block of `src/app/admin/layout.tsx` and `src/app/client/layout.tsx`, replacing hardcoded strings
-- Wrap each sidebar bottom profile block in a Shadcn UI Popover/Dropdown Menu with:
-  - Line 1: Current user email (muted fine typography)
-  - Line 2: `Sign Out from Workspace` button (danger muted red text)
-- Wire the Sign Out button to a `"use server"` action calling `signOut({ redirectTo: "/login" })` from `@/auth`
-- Ensure sign-out clears JWT tokens and redirects to `/login` with full browser navigation
-- Apply Premium Corporate Light Slate theme: white `bg-[#ffffff]` dropdown overlays, `border-slate-100` dividers, `shadow-md`, `hover:bg-slate-50` row states, muted red danger text
-- No registration pages/public signup; zero `any` types; strict TypeScript; build clean
+<!-- Add goals here -->
 
 ## Notes
 
-- **Target Core Files:** `src/app/login/page.tsx` (Polish), `src/app/admin/layout.tsx` (Update), `src/app/client/layout.tsx` (Update)
-- **Module Domain:** Session UI Hydration, Reusable Custom Avatars, NextAuth SignOut Mutations
-- **Visual Design:** Premium Corporate Light Slate — white dropdown cards, fine hairline `border-slate-100`, `shadow-md`, `hover:bg-slate-50`, muted red for Sign Out danger path
-- **Auth Reference:** Uses existing NextAuth v5 setup from Phase 1/2 (`@/auth` exports `auth`, `signIn`, `signOut`)
-- **Key Constraint:** Strictly rejects any registration page or public signup endpoint generation. Enforce Closed B2B borders
-- **Verification:** Login → avatar renders in sidebar → click popover → email visible → Sign Out → redirect to `/login` with cleared session
+<!-- Add notes here -->
 
 ## History
 
@@ -60,3 +47,5 @@
 - **2026-07-26** — Typesafe NextAuth v5 & Drizzle Edge Protection Gateway (Phase 1) implemented on `feature/typesafe-nextauth-v5-drizzle-edge-protection-gateway-phase-1`. Integrated NextAuth v5 (beta.32) with JWT strategy, Credentials + GitHub OAuth providers, and DrizzleAdapter. Created edge-compatible `auth.config.ts`, orchestration engine `auth.ts`, App Router route handler, global middleware with role-based routing (`/admin/*`, `/client/*` → `/login`), and extended NextAuth types with `role`, `companyName`, `id`. Reworked `/login` page with real `signIn` credentials flow, loading state (`Loader2` spinner), and simulation injection for ADMIN/CLIENT roles. Added `AuthSessionProvider` wrapping root layout. Applied Drizzle schema for NextAuth (`account`, `session`, `verificationToken` tables) plus `emailVerified`/`image` columns on `users`, with migrations 0002 and 0003. Downgraded `drizzle-orm` to `^0.38.3` for adapter compatibility. Removed stale mock-based `clients-data-table` and `messaging-desk` components. Guarded `process.on` shutdown handlers with `typeof` check. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/auth-spec-files/auth-phase-1-spec.md`.
 
 - **2026-07-26** — Full B2B Credentials Token Validation Engine (Phase 2) implemented on `feature/full-b2b-credentials-token-validation-engine-phase-2`. Extended `src/auth.config.ts` with Credentials provider edge placeholder (`id: "edge-placeholder"`). Added Zod validation (`z.string().email()`, `z.string().min(8)`) to `src/auth.ts` with Drizzle `eq()` user lookup and `bcryptjs.compare()` password verification. Stripped simulation tester buttons from login page, bound standard form with `signIn("credentials")` flow, and wired Sonner error toasts with spec-matching copy. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/auth-spec-files/auth-phase-2-spec.md`.
+
+- **2026-07-26** — Premium Session Dropdowns & Secure Sign-Out Core (Phase 3) implemented on `feature/premium-session-dropdowns-secure-sign-out-core-phase-3`. Created `UserAvatar` component (initials-fallback), integrated real `auth()` session into sidebar account blocks with Radix Popover showing email + Sign Out button. Built `/profile` page (corporate identity card with plan badge), `/settings` page (notification toggles, password visibility toggle, theme selection). Extended onboarding modal with CLIENT/ADMIN role selection, dynamic form (Package Tier hidden for ADMIN), Company Name field, and Resend email template differentiation. Added eye toggle to password fields on login and settings pages. Gear icon in sidebar opens menu with Profile/Settings links. Routes `/profile` and `/settings` protected via middleware. Built per `context/features/auth-spec-files/auth-phase-3-spec.md`.
