@@ -1,14 +1,21 @@
-# Current Feature
+# Current Feature: Administrative Platform Visual Analytics Hub (Phase 3 Component Integration)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- **Multi-Tenant Aggregated Analytics Queries** — Create `getAdminGlobalAnalytics()` in `src/features/analytics/queries.ts` with parallel Drizzle queries: monthly revenue/spend trends from `monthly_trends`, campaign success distribution from `campaigns`, and avg open rate conversion metrics.
+- **Recharts Client Components** — Create 3 `'use client'` components in `src/app/admin/analytics/components/`: `global-trends-chart.tsx` (Area/LineChart), `campaign-performance-chart.tsx` (BarChart), `conversion-donut-chart.tsx` (PieChart).
+- **Analytics Page Hydration** — Create async Server Component at `src/app/admin/analytics/page.tsx` calling `getAdminGlobalAnalytics()` and rendering chart grid with header/titles.
+- **Sidebar Link Update** — Update `src/app/admin/layout.tsx` to route "Analytics" nav item to `/admin/analytics`.
 
 ## Notes
 
-<!-- Add notes here -->
+- **Visual Design:** Premium Corporate Light Slate theme — `bg-[#f8fafc]` canvas, white cards (`bg-[#ffffff]`), `border-slate-100` hairline boundaries. Revenue curves in Zylora Blue (`#3B5FE0`), budget in charcoal, conversions in emerald/amber.
+- **Type Safety:** Zero `any` types. Strict TypeScript throughout.
+- **Empty State:** Handle empty DB tables gracefully — default chart lines to `0` instead of errors.
+- **Responsive:** Must work across desktop and mobile without clipping or overlap.
+- **References:** @context/project-overview.md, @context/zyloraUi/admin-dashboard-Ui-main.md, `src/db/schema.ts`, @context/coding-standards.md.
 
 ## History
 
