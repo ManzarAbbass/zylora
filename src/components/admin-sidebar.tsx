@@ -27,7 +27,6 @@ const adminNavItems = [
   { icon: CheckCircle2, label: "Asset Approvals", href: "/admin/approvals", badge: 4 },
   { icon: FileText, label: "Financial Reports", href: "/admin/reports", badge: null },
   { icon: MessageSquare, label: "Communications", href: "/admin/messages", badge: 3 },
-  { icon: Settings, label: "Settings", href: "/settings", badge: null },
 ];
 
 const clientNavItems = [
@@ -35,7 +34,6 @@ const clientNavItems = [
   { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
   { icon: FileText, label: "Performance Reports", href: "/client/reports", badge: null },
   { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: 1 },
-  { icon: Settings, label: "Settings", href: "/settings", badge: null },
 ];
 
 interface AdminSidebarProps {
@@ -172,21 +170,13 @@ export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unread
                 </p>
                 <p className="truncate text-xs text-slate-500">{userEmail ?? ""}</p>
               </div>
-              <Link
-                href="/profile"
-                onClick={() => document.body.click()}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50"
-              >
-                <User className="size-4" />
-                View Profile
-              </Link>
               <form action={signOutAction}>
                 <button
                   type="submit"
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-500 transition hover:bg-slate-50"
                 >
                   <LogOut className="size-4" />
-                  Sign Out from Workspace
+                  Sign Out
                 </button>
               </form>
             </PopoverContent>

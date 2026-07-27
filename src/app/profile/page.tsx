@@ -1,8 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { Mail, Shield, Building2, Award } from "lucide-react";
+import { Mail, Shield, Building2, Award, LogOut } from "lucide-react";
 import { LayoutClient } from "@/components/layout-client";
 import { UserAvatar } from "@/components/user-avatar";
+import { signOutAction } from "@/features/auth/actions";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -97,6 +98,16 @@ export default async function ProfilePage() {
               </div>
             </div>
           </div>
+
+          <form action={signOutAction} className="px-6 pb-6">
+            <button
+              type="submit"
+              className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-5 py-2 text-sm font-medium text-red-500 transition hover:bg-red-50"
+            >
+              <LogOut className="size-4" />
+              Sign Out
+            </button>
+          </form>
         </div>
       </div>
     </LayoutClient>
