@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Mail, Lock, TrendingUp, BarChart3, Shield, Users, Loader2, Eye, EyeOff } from "lucide-react";
 import { Toaster, toast } from "sonner";
@@ -228,6 +229,15 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
+              </div>
+
+              <div className="text-right -mt-3">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-slate-500 hover:text-slate-700 transition"
+                >
+                  Forgot Password?
+                </Link>
               </div>
 
               <button

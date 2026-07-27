@@ -14,6 +14,8 @@ export const users = pgTable("users", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   packageName: text("package_name"),
+  resetToken: text("reset_token"),
+  resetTokenExpires: timestamp("reset_token_expires", { mode: "date" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

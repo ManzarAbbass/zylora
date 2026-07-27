@@ -1,14 +1,26 @@
-# Current Feature
+# Current Feature: Secure Credentials Forgot & Reset Password Pipeline (Phase 3 Extra)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Extend `users` table schema in `src/db/schema.ts` with `resetToken` (text, nullable) and `resetTokenExpires` (timestamp, nullable) columns
+- [ ] Create `requestPasswordResetAction` server action in `src/features/auth/actions.ts` — generates crypto.randomUUID token, stores with 1hr expiry, sends Resend recovery email via `onboarding@resend.dev`
+- [ ] Create `executePasswordResetAction` server action — validates token & expiry, hashes new password with bcryptjs (12 rounds), clears resetToken/resetTokenExpires to null
+- [ ] Add "Forgot Password?" link below password field on `/login` page
+- [ ] Build minimalist email input form at `src/app/forgot-password/page.tsx` — invokes `requestPasswordResetAction`, shows Sonner success toast
+- [ ] Build reset password form at `src/app/reset-password/page.tsx` — extracts `?token=` from URL, invokes `executePasswordResetAction`, redirects to `/login`
+- [ ] Wrap all crypto, token checking, and password hashing in try/catch blocks
+- [ ] Token must be cleared from DB after successful reset (prevent replay attacks)
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec Reference:** `@context/features/forgot-password-spec.md`
+- **Design:** Light slate canvas (`bg-[#f8fafc]`), white cards (`bg-[#ffffff] border border-slate-100 shadow-sm`), Royal Blue buttons (`bg-[#3B5FE0]`)
+- **Resend Sandbox:** Must use `'Zylora Security <onboarding@resend.dev>'` as from address
+- **Token Validity:** 1 hour (`new Date(Date.now() + 3600000)`)
+- **Return Pattern:** All actions return `{ success: boolean, data?: any, error?: string }`
+- **No mock data:** All routes fetch from live DB via Drizzle ORM
 
 ## History
 
