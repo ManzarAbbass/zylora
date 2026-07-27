@@ -16,6 +16,49 @@ export async function signOutAction() {
   await signOut({ redirectTo: "/login" });
 }
 
+export async function changePasswordAction(
+  currentPassword: string,
+  newPassword: string,
+) {
+  try {
+    const { auth } = await import("@/auth");
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { success: false as const, error: "Unauthorized." };
+    }
+
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, session.user.id))
+      .then((rows) => rows[0] ?? null);
+
+    if (!user || !user.password) {
+      return { success: false as const, error: "User not found." };
+    }
+
+    const { compare } = await import("bcryptjs");
+    const isValid = await compare(currentPassword, user.password);
+    if (!isValid) {
+      return { success: false as const, error: "Current password is incorrect." };
+    }
+
+    const hashedPassword = await hash(newPassword, 12);
+
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, user.id));
+
+    return { success: true as const, error: undefined };
+  } catch (error) {
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : "Failed to update password.",
+    };
+  }
+}
+
 export async function requestPasswordResetAction(email: string) {
   try {
     const user = await db

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Bell, Key, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { changePasswordAction } from "@/features/auth/actions";
 
 export function SettingsForm() {
   const [notifyEmail, setNotifyEmail] = useState(true);
@@ -18,12 +19,43 @@ export function SettingsForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Validation Error", {
+        description: "All password fields are required.",
+      });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("Validation Error", {
+        description: "New password must be at least 8 characters.",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Validation Error", {
+        description: "New passwords do not match.",
+      });
+      return;
+    }
+
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 800));
+
+    const result = await changePasswordAction(currentPassword, newPassword);
+
     setSubmitting(false);
 
-    toast.success("Update Settings Parameters", {
-      description: "Your workspace configuration preferences have been saved successfully.",
+    if (!result.success) {
+      toast.error("Password Update Failed", {
+        description: result.error,
+      });
+      return;
+    }
+
+    toast.success("Credentials Updated", {
+      description: "Your password has been changed successfully.",
     });
 
     setCurrentPassword("");
@@ -34,15 +66,15 @@ export function SettingsForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg border border-slate-100 bg-[#ffffff] shadow-sm">
-        <div className="border-b border-slate-100 px-6 py-4">
+        <div className="border-b border-slate-100 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <Bell className="size-4 text-[#3B5FE0]" />
             <h2 className="text-base font-semibold text-[#0f172a]">Notification Preferences</h2>
           </div>
         </div>
-        <div className="divide-y divide-slate-100 px-6">
-          <label className="flex items-center justify-between py-4">
-            <div>
+        <div className="divide-y divide-slate-100 px-4 sm:px-6">
+          <label className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-[#0f172a]">Email Notifications</p>
               <p className="text-xs text-slate-500">Receive daily digest and alerts via email</p>
             </div>
@@ -51,7 +83,7 @@ export function SettingsForm() {
               role="switch"
               aria-checked={notifyEmail}
               onClick={() => setNotifyEmail(!notifyEmail)}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 notifyEmail ? "bg-[#3B5FE0]" : "bg-slate-200"
               }`}
             >
@@ -62,8 +94,8 @@ export function SettingsForm() {
               />
             </button>
           </label>
-          <label className="flex items-center justify-between py-4">
-            <div>
+          <label className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-[#0f172a]">Campaign Updates</p>
               <p className="text-xs text-slate-500">Get notified when campaigns launch or change status</p>
             </div>
@@ -72,7 +104,7 @@ export function SettingsForm() {
               role="switch"
               aria-checked={notifyCampaigns}
               onClick={() => setNotifyCampaigns(!notifyCampaigns)}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 notifyCampaigns ? "bg-[#3B5FE0]" : "bg-slate-200"
               }`}
             >
@@ -83,8 +115,8 @@ export function SettingsForm() {
               />
             </button>
           </label>
-          <label className="flex items-center justify-between py-4">
-            <div>
+          <label className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-[#0f172a]">Approval Requests</p>
               <p className="text-xs text-slate-500">Receive alerts for pending asset approvals</p>
             </div>
@@ -93,7 +125,7 @@ export function SettingsForm() {
               role="switch"
               aria-checked={notifyApprovals}
               onClick={() => setNotifyApprovals(!notifyApprovals)}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                 notifyApprovals ? "bg-[#3B5FE0]" : "bg-slate-200"
               }`}
             >
@@ -108,13 +140,13 @@ export function SettingsForm() {
       </div>
 
       <div className="rounded-lg border border-slate-100 bg-[#ffffff] shadow-sm">
-        <div className="border-b border-slate-100 px-6 py-4">
+        <div className="border-b border-slate-100 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <Key className="size-4 text-[#3B5FE0]" />
             <h2 className="text-base font-semibold text-[#0f172a]">Secure Access Credentials</h2>
           </div>
         </div>
-        <div className="space-y-4 px-6 py-4">
+        <div className="space-y-4 px-4 py-4 sm:px-6">
           <div>
             <label className="text-xs font-medium text-slate-500">Current Password</label>
             <div className="relative mt-1">
@@ -175,14 +207,14 @@ export function SettingsForm() {
         </div>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row sm:justify-end">
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#3B5FE0] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3B5FE0]/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#3B5FE0] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3B5FE0]/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {submitting && <Loader2 className="size-4 animate-spin" />}
-          [Update Settings Parameters]
+          Update Credentials
         </button>
       </div>
     </form>
