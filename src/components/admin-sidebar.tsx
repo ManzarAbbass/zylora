@@ -96,6 +96,14 @@ export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unread
         </button>
       </div>
 
+      {!collapsed && (
+        <div className="flex items-center gap-3 border-b border-white/10 px-4 py-2">
+          <span className="size-2 rounded-full bg-[#3B5FE0]" />
+          <span className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/70">
+            {isClient ? "Client" : "Admin"}
+          </span>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto px-3 py-4">
         {!collapsed && (
           <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-300">
