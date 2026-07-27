@@ -32,3 +32,18 @@ export async function rejectAssetAction(assetId: string, feedbackText: string) {
     return { success: false as const, data: null, error: "Failed to reject asset" };
   }
 }
+
+export async function resubmitRevisedAssetAction(assetId: string) {
+  try {
+    await db
+      .update(contentApprovals)
+      .set({ status: "PENDING", feedback: null })
+      .where(eq(contentApprovals.id, assetId));
+
+    revalidatePath("/admin/approvals");
+    revalidatePath("/client/approvals");
+    return { success: true as const, data: null, error: undefined };
+  } catch {
+    return { success: false as const, data: null, error: "Failed to resubmit asset" };
+  }
+}

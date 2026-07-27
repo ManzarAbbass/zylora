@@ -1,14 +1,27 @@
-# Current Feature
+# Current Feature: Administrative Global Approvals Queue & Asset Re-Submission Engine (Phase 3)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Extend `src/features/approvals/queries.ts` with `getGlobalAdminApprovalsQueue` — Drizzle inner join across `content_approvals` → `campaigns` → `users`, returning Asset ID, Campaign Title, Client Company Name, Content Type, Preview URL, Status, Feedback, Created Timestamp, sorted by `createdAt DESC`
+- [ ] Extend `src/features/approvals/actions.ts` with `resubmitRevisedAssetAction(assetId)` — sets `status → 'PENDING'`, clears `feedback → null`, revalidates `/admin/approvals` and `/client/approvals`
+- [ ] Create `src/app/admin/approvals/page.tsx` as Async Server Component hydrating from `getGlobalAdminApprovalsQueue()`
+- [ ] Create `AdminApprovalsGrid` client component with:
+  - Multi-column card grid (responsive 1/2/3 cols with horizontal scroll safeguard)
+  - Status badges: PENDING (neutral slate), APPROVED (emerald capsule), REJECTED (amber border/warning)
+  - REJECTED cards show client feedback in amber typography + `[Re-Submit Revised Deliverable]` button
+  - Resubmit action via `useTransition` + Sonner toast
+  - Empty state: "No campaigns creative deliverables have been queued for validation loops."
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec:** `@context/features/admin-approvals-spec.md`
+- **UI Reference:** `@context/zyloraUi/admin-dashboard-Ui-main.md`
+- **Client Approvals Logic:** `@context/features/client-approvals-spec.md`
+- **Coding Standards:** `@context/coding-standards.md`
+- **Design:** Premium Corporate Light Slate — white cards (`bg-[#ffffff]`), hairline borders (`border-slate-100`), slate canvas (`bg-[#f8fafc]`), royal blue accent (`#2563eb`) for action buttons
+- **Status Enum:** `PENDING | APPROVED | REJECTED`
 
 ## History
 

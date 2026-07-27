@@ -1,10 +1,34 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { contentApprovals, campaigns } from "@/db/schema";
+import { contentApprovals, campaigns, users } from "@/db/schema";
 
 const approvalFields = {
   id: contentApprovals.id,
   campaignId: contentApprovals.campaignId,
+  contentType: contentApprovals.contentType,
+  previewUrl: contentApprovals.previewUrl,
+  captionText: contentApprovals.captionText,
+  status: contentApprovals.status,
+  feedback: contentApprovals.feedback,
+  createdAt: contentApprovals.createdAt,
+} as const;
+
+export type GlobalAdminApprovalItem = {
+  id: string;
+  campaignTitle: string;
+  clientCompanyName: string | null;
+  contentType: string;
+  previewUrl: string;
+  captionText: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  feedback: string | null;
+  createdAt: Date;
+};
+
+const globalAdminFields = {
+  id: contentApprovals.id,
+  campaignTitle: campaigns.title,
+  clientCompanyName: users.companyName,
   contentType: contentApprovals.contentType,
   previewUrl: contentApprovals.previewUrl,
   captionText: contentApprovals.captionText,
@@ -19,6 +43,15 @@ export async function getApprovalsByClient(clientId: string) {
     .from(contentApprovals)
     .innerJoin(campaigns, eq(contentApprovals.campaignId, campaigns.id))
     .where(eq(campaigns.clientId, clientId));
+}
+
+export async function getGlobalAdminApprovalsQueue(): Promise<GlobalAdminApprovalItem[]> {
+  return db
+    .select(globalAdminFields)
+    .from(contentApprovals)
+    .innerJoin(campaigns, eq(contentApprovals.campaignId, campaigns.id))
+    .innerJoin(users, eq(campaigns.clientId, users.id))
+    .orderBy(desc(contentApprovals.createdAt));
 }
 
 export async function getPendingApprovalsByClient(clientId: string) {
