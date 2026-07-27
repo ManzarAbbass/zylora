@@ -1,26 +1,14 @@
-# Current Feature: Secure Credentials Forgot & Reset Password Pipeline (Phase 3 Extra)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Extend `users` table schema in `src/db/schema.ts` with `resetToken` (text, nullable) and `resetTokenExpires` (timestamp, nullable) columns
-- [ ] Create `requestPasswordResetAction` server action in `src/features/auth/actions.ts` — generates crypto.randomUUID token, stores with 1hr expiry, sends Resend recovery email via `onboarding@resend.dev`
-- [ ] Create `executePasswordResetAction` server action — validates token & expiry, hashes new password with bcryptjs (12 rounds), clears resetToken/resetTokenExpires to null
-- [ ] Add "Forgot Password?" link below password field on `/login` page
-- [ ] Build minimalist email input form at `src/app/forgot-password/page.tsx` — invokes `requestPasswordResetAction`, shows Sonner success toast
-- [ ] Build reset password form at `src/app/reset-password/page.tsx` — extracts `?token=` from URL, invokes `executePasswordResetAction`, redirects to `/login`
-- [ ] Wrap all crypto, token checking, and password hashing in try/catch blocks
-- [ ] Token must be cleared from DB after successful reset (prevent replay attacks)
+<!-- Add goals here -->
 
 ## Notes
 
-- **Spec Reference:** `@context/features/forgot-password-spec.md`
-- **Design:** Light slate canvas (`bg-[#f8fafc]`), white cards (`bg-[#ffffff] border border-slate-100 shadow-sm`), Royal Blue buttons (`bg-[#3B5FE0]`)
-- **Resend Sandbox:** Must use `'Zylora Security <onboarding@resend.dev>'` as from address
-- **Token Validity:** 1 hour (`new Date(Date.now() + 3600000)`)
-- **Return Pattern:** All actions return `{ success: boolean, data?: any, error?: string }`
-- **No mock data:** All routes fetch from live DB via Drizzle ORM
+<!-- Add notes here -->
 
 ## History
 
@@ -66,4 +54,6 @@
 
 - **2026-07-27** — Administrative Platform Visual Analytics Hub (Phase 3 Component Integration) implemented on `feature/administrative-platform-visual-analytics-hub-phase-3-component-integration`. Created `src/features/analytics/queries.ts` with `getAdminGlobalAnalytics()` — 3 parallel Drizzle aggregations (monthly revenue/spend from `monthly_trends`, campaign performance from `campaigns`, avg open rate). Created 3 `'use client'` Recharts components in `src/app/admin/analytics/components/`: `global-trends-chart.tsx` (Area/Line combo), `campaign-performance-chart.tsx` (BarChart), `conversion-donut-chart.tsx` (PieChart). Created `src/app/admin/analytics/page.tsx` as async Server Component with responsive 2-column grid. Sidebar "Client Analytics" link already routed to `/admin/analytics`. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-analytics-spec.md`.
 
-- **2026-07-27** — Administrative Global Approvals Queue & Asset Re-Submission Engine (Phase 3) implemented on `feature/administrative-global-approvals-queue-asset-re-submission-engine-phase-3`. Extended `src/features/approvals/queries.ts` with `getGlobalAdminApprovalsQueue` — Drizzle inner join across `content_approvals` → `campaigns` → `users` returning Asset ID, Campaign Title, Client Company Name, Content Type, Preview URL, Status, Feedback, Created Timestamp, sorted by `createdAt DESC`. Extended `src/features/approvals/actions.ts` with `resubmitRevisedAssetAction` — sets `status → 'PENDING'`, clears `feedback → null`, revalidates `/admin/approvals` and `/client/approvals`. Created `src/app/admin/approvals/page.tsx` as Async Server Component. Created `AdminApprovalsGrid` client component with multi-column card grid, status badges (slate/emerald/amber), status-based sections (Pending Review / Changes Requested / Approved), `[Re-Submit Revised Deliverable]` button on REJECTED cards via `useTransition`, Sonner toasts, and empty state placeholder. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-approvals-spec.md`.
+- **2026-07-27** — Administrative Global Approvals Queue & Asset Re-Submission Engine (Phase 3) implemented on `feature/administrative-global-approvals-queue-asset-re-submission-engine-phase-3`.
+
+- **2026-07-27** — Secure Credentials Forgot & Reset Password Pipeline (Phase 3 Extra) implemented on `feature/secure-credentials-forgot-reset-password-pipeline-phase-3-extra`. Extended `users` table schema with `resetToken`/`resetTokenExpires` columns. Created `requestPasswordResetAction` (crypto.randomUUID, 1hr expiry, Resend email delivery via onboarding@resend.dev) and `executePasswordResetAction` (token validation, bcryptjs 12-round hashing, token flush). Added gray "Forgot Password?" link to `/login`. Built `/forgot-password` page with email form and Sonner success toast. Built `/reset-password` page with Suspense-wrapped token extraction, new password + confirm fields, and redirect to `/login`. All crypto wrapped in try/catch. Zero `any` types, build clean. Built per `context/features/forgot-password-spec.md`. Extended `src/features/approvals/queries.ts` with `getGlobalAdminApprovalsQueue` — Drizzle inner join across `content_approvals` → `campaigns` → `users` returning Asset ID, Campaign Title, Client Company Name, Content Type, Preview URL, Status, Feedback, Created Timestamp, sorted by `createdAt DESC`. Extended `src/features/approvals/actions.ts` with `resubmitRevisedAssetAction` — sets `status → 'PENDING'`, clears `feedback → null`, revalidates `/admin/approvals` and `/client/approvals`. Created `src/app/admin/approvals/page.tsx` as Async Server Component. Created `AdminApprovalsGrid` client component with multi-column card grid, status badges (slate/emerald/amber), status-based sections (Pending Review / Changes Requested / Approved), `[Re-Submit Revised Deliverable]` button on REJECTED cards via `useTransition`, Sonner toasts, and empty state placeholder. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-approvals-spec.md`.
