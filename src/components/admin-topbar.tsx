@@ -14,11 +14,16 @@ export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) 
         Zylora
       </span>
 
-      <p className="hidden text-sm font-medium text-white/80 sm:block lg:text-slate-500">
-        {role === "CLIENT" ? "Welcome back, Ahmed" : "Welcome back, Zylora team"}
-      </p>
+      <div className="min-w-0">
+        <p className="hidden text-[10px] font-semibold uppercase tracking-widest text-white/50 lg:block lg:text-slate-400">
+          {role === "CLIENT" ? "CLIENT · CAMPAIGN ANALYTICS" : "ADMIN · OPERATIONAL OVERVIEW"}
+        </p>
+        <p className="hidden text-sm font-medium text-white/80 sm:block lg:text-slate-500">
+          {role === "CLIENT" ? "Welcome back, Ahmed" : "Welcome back, Zylora team"}
+        </p>
+      </div>
 
-      <div className="relative hidden max-w-sm md:block">
+      <div className="relative mx-auto hidden max-w-md flex-1 md:block">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/40 lg:text-slate-400" />
         <input
           type="text"
