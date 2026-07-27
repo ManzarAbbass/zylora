@@ -18,13 +18,24 @@ export default {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const userRole = auth?.user?.role as string | undefined;
       const isOnAdmin = nextUrl.pathname.startsWith("/admin");
       const isOnClient = nextUrl.pathname.startsWith("/client");
       const isOnSettings = nextUrl.pathname.startsWith("/settings");
       const isOnProfile = nextUrl.pathname.startsWith("/profile");
-      if (isOnAdmin || isOnClient || isOnSettings || isOnProfile) {
-        if (!isLoggedIn) return false;
+
+      if (!isLoggedIn && (isOnAdmin || isOnClient || isOnSettings || isOnProfile)) {
+        return false;
       }
+
+      if (isOnAdmin && userRole !== "ADMIN") {
+        return Response.redirect(new URL("/client/dashboard", nextUrl.origin));
+      }
+
+      if (isOnClient && userRole === "ADMIN") {
+        return Response.redirect(new URL("/admin/dashboard", nextUrl.origin));
+      }
+
       return true;
     },
   },
