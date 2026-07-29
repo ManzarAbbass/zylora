@@ -1,29 +1,14 @@
-# Current Feature: Rate Limiting Shield
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Create `src/lib/rate-limit.ts` — initialize Upstash Redis with `@upstash/ratelimit` sliding-window strategies:
-  - Login limiter: `slidingWindow(5, "900 s")` with prefix `@zylora/login-shield`
-  - Recovery limiter: `slidingWindow(3, "3600 s")` with prefix `@zylora/recovery-shield`
-- [ ] Inject IP-based rate limit checks at top of server actions in `src/features/auth/actions.ts`:
-  - Login gate: check `loginRateLimiter.limit(`${ip}:${email}`)` before DB query or password hash
-  - Recovery gate: check `recoveryRateLimiter.limit(ip)` before Resend mail trigger
-- [ ] Return clean `{ success, data, error }` error responses when rate limit exceeded (no DB/mail touch)
-- [ ] Frontend Sonner toast on rate-limit rejection with spec-matching warning copy
-- [ ] Implement fail-open strategy: wrap Redis calls in try/catch, log warning, allow auth pipeline to proceed on Redis outage
-- [ ] Zero `any` types — strict TypeScript throughout
+<!-- Add goals here -->
 
 ## Notes
 
-- **Env vars required:** `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`
-- **Package:** `@upstash/ratelimit` (peer dependency on `@upstash/redis`)
-- **IP extraction:** `headers().get("x-forwarded-for") ?? "127.0.0.1"` via `next/headers`
-- **Toast message:** `"Too many security validation attempts. Your access vector has been rate-limited. Please try again later."`
-- **Cross-ref specs:** `@context/features/forgot-password-spec.md` (recovery pipeline), `@context/project-overview.md` (closed B2B constraints), `@context/coding-standards.md` (typesafe `{ success, data, error }` pattern)
-- **Fail-open constraint:** Redis downtime must not block auth — log warning and proceed
-- **Phase 3 Enterprise** — Distributed serverless-compatible rate limiting via Upstash Redis
+<!-- Add notes here -->
 
 ## History
 
@@ -39,4 +24,4 @@
 
 - **2026-07-27** — Secure Credentials Forgot & Reset Password Pipeline (Phase 3 Extra) implemented on `feature/secure-credentials-forgot-reset-password-pipeline-phase-3-extra`. Extended `users` table schema with `resetToken`/`resetTokenExpires` columns. Created `requestPasswordResetAction` (crypto.randomUUID, 1hr expiry, Resend email delivery via onboarding@resend.dev) and `executePasswordResetAction` (token validation, bcryptjs 12-round hashing, token flush). Added gray "Forgot Password?" link to `/login`. Built `/forgot-password` page with email form and Sonner success toast. Built `/reset-password` page with Suspense-wrapped token extraction, new password + confirm fields, and redirect to `/login`. All crypto wrapped in try/catch. Zero `any` types, build clean. Built per `context/features/forgot-password-spec.md`. Extended `src/features/approvals/queries.ts` with `getGlobalAdminApprovalsQueue` — Drizzle inner join across `content_approvals` → `campaigns` → `users` returning Asset ID, Campaign Title, Client Company Name, Content Type, Preview URL, Status, Feedback, Created Timestamp, sorted by `createdAt DESC`. Extended `src/features/approvals/actions.ts` with `resubmitRevisedAssetAction` — sets `status → 'PENDING'`, clears `feedback → null`, revalidates `/admin/approvals` and `/client/approvals`. Created `src/app/admin/approvals/page.tsx` as Async Server Component. Created `AdminApprovalsGrid` client component with multi-column card grid, status badges (slate/emerald/amber), status-based sections (Pending Review / Changes Requested / Approved), `[Re-Submit Revised Deliverable]` button on REJECTED cards via `useTransition`, Sonner toasts, and empty state placeholder. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-approvals-spec.md`.
 
-- **2026-07-29** — Rate Limiting Shield loaded via `feature load rate-limiting-spec`. Spec defines two Upstash Redis sliding-window limiters (login 5/15min, recovery 3/1hr) with `@zylora/*` prefix namespacing, IP-based tracking, fail-open safety, and Sonner toast alerts.
+- **2026-07-29** — Rate Limiting Shield implemented on `feature/rate-limiting-shield`. Created `src/lib/rate-limit.ts` with two Upstash Redis sliding-window limiters (login 5/15min prefix `@zylora/login-shield`, recovery 3/1hr prefix `@zylora/recovery-shield`). Injected `loginAction` server action with IP+email rate check before NextAuth credentials flow, and recovery rate gate into `requestPasswordResetAction`. Wired login page with spec-matching Sonner toast on rate-limit rejection. Implemented fail-open strategy: `console.warn` on Redis outage, auth pipeline proceeds. Strict TypeScript, zero `any` types. Built per `context/features/rate-limiting-spec.md`.
