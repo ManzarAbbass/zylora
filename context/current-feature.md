@@ -1,14 +1,27 @@
-# Current Feature
+# Current Feature: Universal Header Search Command Center (Phase 3 Layout Integration)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Create `src/features/search/queries.ts` with `executeUniversalSearch` — Admin: parallel LIKE on `users` (name/email/companyName) + `campaigns` (title); Client: tenant-scoped `campaigns.title` bound by `clientId`
+- [ ] Create `src/features/search/actions.ts` — `universalSearchAction` server action with NextAuth session gate
+- [ ] Create `src/hooks/use-debounce.ts` — 300ms debounce hook
+- [ ] Refactor `src/components/admin-topbar.tsx` — integrate `useSession`, wire debounced search to server action, render floating results dropdown with Escape/click-outside dismiss
+- [ ] Remove local search input from `src/features/clients/components/clients-live-table.tsx`
+- [ ] Verify build passes (`npm run build` — zero TypeScript errors, no `any`, no lint violations)
+- [ ] Verify zero data leak: CLIENT cannot see other accounts' search results
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec source:** `@context/features/global-header-search-spec.md`
+- **Existing header:** `src/components/admin-topbar.tsx` (contains static search input with `placeholder="Search clients, campaigns..."`)
+- **No `src/components/shared/` dir exists** — use existing `src/components/admin-topbar.tsx` path
+- **No `src/hooks/` dir exists** — will be created
+- **Visual:** Premium Corporate Light Slate — `bg-white`, `border-slate-100`, `ring-[#2563eb]` focus, floating overlay `shadow-xl rounded-xl`
+- **DB:** `users` (id, name, email, companyName, role) + `campaigns` (id, title, clientId, status) via Drizzle `like`/`or`/`and`/`eq`
+- **Auth:** `useSession()` from `next-auth/react` inside client component; session.user.role/uid for query routing
+- **Type safety:** strict TypeScript, ban on `any`
 
 ## History
 
