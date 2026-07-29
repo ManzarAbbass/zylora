@@ -1,14 +1,22 @@
-# Current Feature
+# Current Feature: Corporate Client Financial Analytics Ledger Hub (Phase 3 Secure Isolation)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] **1. Sandboxed Financial Extraction Query** — Add `getClientExecutiveReportsData(clientId)` in `src/features/clients/queries.ts` using pure Drizzle syntax to aggregate campaigns by `clientId`: total spend, total revenue, net ROI (Revenue - Spend). Return structured campaigns array + macro summary.
+- [ ] **2. Core Server Page** — Create `src/app/client/reports/page.tsx` as async Server Component. Gate with `await auth()`, extract `clientId`, hydrate data via query. Render header "Business Performance Ledger", 3 summary cards (Total Investment, Attributed Revenue, Net Profit Margin in `$X,XXX.XX` format), and granular campaign grid (Title, Emails Sent, CTR, Spend, Revenue).
+- [ ] **3. Sidebar Link Realignment** — Update `src/app/client/layout.tsx`: change "Financial Report" nav item `href` to `/client/reports`.
+- [ ] **4. Tenant Data Isolation** — Query must be strictly locked to `session.user.id`; Client A cannot see Client B's data.
+- [ ] **5. Zero-State Graceful Handling** — Default summary cards to `"$0.00"` when no campaigns exist, no layout shifts or server errors.
 
 ## Notes
 
-<!-- Add notes here -->
+- Spec file: `context/features/client-reports-spec.md`
+- References: `context/project-overview.md` (data models), `context/features/admin-reports-spec.md` (billing formula consistency), `src/db/schema.ts` (campaigns/users), `context/coding-standards.md` (async Server Components, zero `any`, Drizzle ORM)
+- Design: Premium Corporate Light Slate — white metric cards (`bg-[#ffffff]`), slate dividers (`border-slate-100`), light base (`bg-[#f8fafc]`), numbers in `text-slate-900`, blue highlights for profit
+- Stack: Next.js 15, React 19, Tailwind v4, ShadCN UI, Drizzle ORM, NextAuth v5
+- Core constraint: No `'use client'` in page layer; no standalone API routes for this feature
 
 ## History
 

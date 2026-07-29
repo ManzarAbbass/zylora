@@ -74,3 +74,54 @@ export async function getAdminExecutiveReports(): Promise<ExecutiveReport[]> {
     netRoi: (parseFloat(r.totalRevenue) - parseFloat(r.totalSpend)).toFixed(2),
   }));
 }
+
+export interface ClientCampaignRow {
+  id: string;
+  title: string;
+  emailsSent: number;
+  openRate: string;
+  revenueGenerated: string;
+}
+
+export interface ClientExecutiveSummary {
+  totalSpend: string;
+  totalRevenue: string;
+  netRoi: string;
+}
+
+export interface ClientExecutiveReportsData {
+  campaigns: ClientCampaignRow[];
+  summary: ClientExecutiveSummary;
+}
+
+export async function getClientExecutiveReportsData(clientId: string): Promise<ClientExecutiveReportsData> {
+  const campaignRows = await db
+    .select({
+      id: campaigns.id,
+      title: campaigns.title,
+      emailsSent: campaigns.emailsSent,
+      openRate: campaigns.openRate,
+      revenueGenerated: campaigns.revenueGenerated,
+    })
+    .from(campaigns)
+    .where(eq(campaigns.clientId, clientId));
+
+  const [spendResult] = await db
+    .select({
+      totalSpend: sql<string>`coalesce(cast(sum(${monthlyTrends.spend}) as varchar), '0')`,
+    })
+    .from(monthlyTrends)
+    .where(eq(monthlyTrends.clientId, clientId));
+
+  const totalSpend = spendResult?.totalSpend ?? "0";
+  const totalRevenue = campaignRows.reduce(
+    (sum, c) => sum + parseFloat(c.revenueGenerated),
+    0,
+  ).toFixed(2);
+  const netRoi = (parseFloat(totalRevenue) - parseFloat(totalSpend)).toFixed(2);
+
+  return {
+    campaigns: campaignRows,
+    summary: { totalSpend, totalRevenue, netRoi },
+  };
+}

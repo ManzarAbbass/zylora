@@ -32,7 +32,7 @@ const adminNavItems = [
 const clientNavItems = [
   { icon: BarChart3, label: "Campaign Analytics", href: "/client/dashboard", badge: null },
   { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
-  { icon: FileText, label: "Performance Reports", href: "/client/reports", badge: null },
+  { icon: FileText, label: "Financial Report", href: "/client/reports", badge: null },
   { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: 1 },
 ];
 
