@@ -1,15 +1,34 @@
+import { auth } from "@/auth";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 import { getClientChatHistory } from "@/features/messages/queries";
 import ChatClient from "./chat-client";
 
-const SEEDED_CLIENT_ID = "31ef43a7-d86f-4455-960d-8dba5d197363";
-
 export default async function ClientMessagesPage() {
-  const messages = await getClientChatHistory(SEEDED_CLIENT_ID);
+  const session = await auth();
+  const clientId = session?.user?.id;
+  if (!clientId) {
+    return (
+      <div className="rounded-xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+        <p className="text-sm text-slate-400">You must be logged in to view messages.</p>
+      </div>
+    );
+  }
+
+  const [admin] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.role, "ADMIN"))
+    .limit(1);
+
+  const messages = await getClientChatHistory(clientId);
 
   return (
     <ChatClient
       initialMessages={messages}
-      clientId={SEEDED_CLIENT_ID}
+      clientId={clientId}
+      adminId={admin?.id ?? null}
     />
   );
 }

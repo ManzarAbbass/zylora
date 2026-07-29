@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { messages } from "@/db/schema";
+import { setUserOnline, isUserOnline } from "@/lib/presence";
 
 export async function sendAdminMessageAction(clientId: string, messageText: string) {
   if (!clientId || !messageText.trim()) {
@@ -40,6 +41,7 @@ export async function sendClientMessageAction(clientId: string, messageText: str
     });
 
     revalidatePath("/client/messages");
+    revalidatePath("/admin/messages");
     return { success: true as const, data: null, error: undefined };
   } catch (error) {
     return {
@@ -48,4 +50,12 @@ export async function sendClientMessageAction(clientId: string, messageText: str
       error: error instanceof Error ? error.message : "Failed to send message.",
     };
   }
+}
+
+export async function heartbeatAction(userId: string) {
+  await setUserOnline(userId);
+}
+
+export async function checkPresenceAction(userId: string): Promise<boolean> {
+  return isUserOnline(userId);
 }

@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { getAdminChatThreads, getChatMessagesByClientIds } from "@/features/messages/queries";
 import { MessagingDeskLive } from "@/features/messages/components/messaging-desk-live";
 
@@ -10,6 +11,9 @@ interface Message {
 }
 
 export default async function AdminMessagesPage() {
+  const session = await auth();
+  const adminId = session?.user?.id ?? "";
+
   const threads = await getAdminChatThreads();
 
   const clientIds = threads.map((t) => t.id);
@@ -24,5 +28,5 @@ export default async function AdminMessagesPage() {
     }
   }
 
-  return <MessagingDeskLive threads={threads} allMessages={allMessages} notificationBadges={notificationBadges} />;
+  return <MessagingDeskLive threads={threads} allMessages={allMessages} notificationBadges={notificationBadges} adminId={adminId} />;
 }

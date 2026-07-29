@@ -1,14 +1,23 @@
-# Current Feature
+# Current Feature: Corporate Client Direct Agency Message Pipeline (Phase 3 Final Core)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] **§1 — Query extension** — `getClientChatHistory(clientId)` already exists. Verify query correctness.
+- [ ] **§2 — Server Action fix** — Add `revalidatePath('/admin/messages')` to `sendClientMessageAction` for cross-portal cache sync.
+- [ ] **§3 — Page hydration** — Replace hardcoded `SEEDED_CLIENT_ID` in `src/app/client/messages/page.tsx` with `await auth()` session extraction (`clientId = session.user.id`).
+- [ ] **§4 — Tenant data isolation** — Confirm `getClientChatHistory(clientId)` uses dynamic session ID; no hardcoded IDs remain.
+- [ ] **§5 — Visual compliance** — Verify `h-[calc(100vh-theme(spacing.16))]` height lock, auto-scroll, `#2563eb`/`#4f46e5` accent colors, Premium Corporate Light Slate theme.
+- [ ] **§6 — Type safety** — Zero `any` types, strict TypeScript throughout.
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec Reference:** `context/features/client-messages-spec.md`
+- **Core files:** `src/features/messages/actions.ts`, `src/features/messages/queries.ts`, `src/app/client/messages/page.tsx`, `src/app/client/messages/chat-client.tsx`
+- **DB Schema:** `messages` table in `src/db/schema.ts` — columns: `id`, `clientId` (FK→users), `senderRole` (ADMIN|CLIENT), `messageText`, `createdAt`
+- **Design:** Chat bubbles — client right-aligned (#3B5FE0 currently, target #2563eb/#4f46e5), admin left-aligned (bg-slate-100). Full-height viewport scroller, input bar at bottom. Sonner toast on send.
+- **Session Gate:** Must use `auth()` from `@/auth` — never hardcode UUIDs.
 
 ## History
 

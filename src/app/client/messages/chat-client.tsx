@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Send, Paperclip, MessageSquare } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import { sendClientMessageAction } from "@/features/messages/actions";
+import { sendClientMessageAction, heartbeatAction, checkPresenceAction } from "@/features/messages/actions";
 
 interface Message {
   id: string;
@@ -16,6 +16,7 @@ interface Message {
 interface ChatClientProps {
   initialMessages: Message[];
   clientId: string;
+  adminId: string | null;
 }
 
 function formatTime(date: Date): string {
@@ -47,9 +48,10 @@ function shouldShowDateSeparator(
   );
 }
 
-export default function ChatClient({ initialMessages, clientId }: ChatClientProps) {
+export default function ChatClient({ initialMessages, clientId, adminId }: ChatClientProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [inputText, setInputText] = useState("");
+  const [adminOnline, setAdminOnline] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,6 +59,23 @@ export default function ChatClient({ initialMessages, clientId }: ChatClientProp
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    heartbeatAction(clientId);
+    const hb = setInterval(() => heartbeatAction(clientId), 20000);
+    return () => clearInterval(hb);
+  }, [clientId]);
+
+  useEffect(() => {
+    if (!adminId) return;
+    const check = async () => {
+      const online = await checkPresenceAction(adminId);
+      setAdminOnline(online);
+    };
+    check();
+    const poll = setInterval(check, 15000);
+    return () => clearInterval(poll);
+  }, [adminId]);
 
   const handleSend = useCallback(async () => {
     if (!inputText.trim()) return;
@@ -105,8 +124,8 @@ export default function ChatClient({ initialMessages, clientId }: ChatClientProp
               Zylora Agency
             </h3>
             <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
-              <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
-              Active now
+              <span className={`inline-block size-1.5 rounded-full ${adminOnline ? "bg-emerald-500" : "bg-slate-300"}`} />
+              {adminOnline ? "Active now" : "Offline"}
             </p>
           </div>
         </div>
@@ -149,7 +168,7 @@ export default function ChatClient({ initialMessages, clientId }: ChatClientProp
                       <div
                         className={`max-w-[75%] rounded-xl px-4 py-2.5 ${
                           isClient
-                            ? "bg-[#3B5FE0] text-white"
+                            ? "bg-[#2563eb] text-white"
                             : "bg-slate-100 text-slate-900"
                         }`}
                       >
@@ -191,7 +210,7 @@ export default function ChatClient({ initialMessages, clientId }: ChatClientProp
             <button
               type="button"
               onClick={handleSend}
-              className="flex shrink-0 items-center gap-2 rounded-lg bg-[#3B5FE0] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3B5FE0]/90"
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-[#2563eb] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563eb]/90"
             >
               <Send className="size-4" />
               <span className="hidden sm:inline">Send Request</span>

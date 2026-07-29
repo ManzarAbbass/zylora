@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Paperclip, Send } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import { sendAdminMessageAction } from "@/features/messages/actions";
+import { sendAdminMessageAction, heartbeatAction, checkPresenceAction } from "@/features/messages/actions";
 import type { AdminChatThread } from "@/features/messages/queries";
 
 interface Message {
@@ -18,6 +18,7 @@ interface MessagingDeskLiveProps {
   threads: AdminChatThread[];
   allMessages: Record<string, Message[]>;
   notificationBadges: Record<string, number>;
+  adminId: string;
 }
 
 function formatTime(date: Date): string {
@@ -36,12 +37,30 @@ function initials(name: string): string {
     .slice(0, 2);
 }
 
-export function MessagingDeskLive({ threads, allMessages, notificationBadges }: MessagingDeskLiveProps) {
+export function MessagingDeskLive({ threads, allMessages, notificationBadges, adminId }: MessagingDeskLiveProps) {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(
     threads[0]?.id ?? null,
   );
   const [messages, setMessages] = useState<Record<string, Message[]>>(allMessages);
   const [inputText, setInputText] = useState("");
+  const [clientOnline, setClientOnline] = useState(false);
+
+  useEffect(() => {
+    heartbeatAction(adminId);
+    const hb = setInterval(() => heartbeatAction(adminId), 20000);
+    return () => clearInterval(hb);
+  }, [adminId]);
+
+  useEffect(() => {
+    if (!selectedClientId) return;
+    const check = async () => {
+      const online = await checkPresenceAction(selectedClientId);
+      setClientOnline(online);
+    };
+    check();
+    const poll = setInterval(check, 15000);
+    return () => clearInterval(poll);
+  }, [selectedClientId]);
 
   const selectedThread = selectedClientId
     ? threads.find((t) => t.id === selectedClientId) ?? null
@@ -110,7 +129,7 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges }: 
                 <div className="relative flex size-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-semibold text-slate-700">
                   {initials(thread.name)}
                   {badge > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-[#3B5FE0] text-[10px] font-semibold text-white">
+                    <span className="absolute -right-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-[#2563eb] text-[10px] font-semibold text-white">
                       {badge}
                     </span>
                   )}
@@ -152,8 +171,9 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges }: 
                 <h3 className="text-base font-semibold text-slate-900">
                   {selectedThread.name} Channel
                 </h3>
-                <p className="mt-0.5 text-xs text-slate-500">
-                  Enterprise Tier Communication Pipeline &bull; Active
+                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
+                  <span className={`inline-block size-1.5 rounded-full ${clientOnline ? "bg-emerald-500" : "bg-slate-300"}`} />
+                  {clientOnline ? "Active now" : "Offline"}
                 </p>
               </div>
             </div>
@@ -178,7 +198,7 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges }: 
                           className={`max-w-[70%] rounded-xl px-4 py-2.5 ${
                             isAdmin
                               ? "bg-slate-100 text-slate-900"
-                              : "bg-[#3B5FE0] text-white"
+                              : "bg-[#2563eb] text-white"
                           }`}
                         >
                           <p className="text-sm">{msg.messageText}</p>
@@ -214,7 +234,7 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges }: 
                 />
                 <button
                   onClick={handleSend}
-                  className="flex shrink-0 items-center gap-2 rounded-lg bg-[#3B5FE0] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#3B5FE0]/90"
+                  className="flex shrink-0 items-center gap-2 rounded-lg bg-[#2563eb] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2563eb]/90"
                 >
                   <Send className="size-4" />
                   <span className="hidden sm:inline">Send Response</span>
