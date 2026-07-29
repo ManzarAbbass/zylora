@@ -1,29 +1,18 @@
-# Current Feature: Universal Header Search Command Center (Phase 3 Layout Integration)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Create `src/features/search/queries.ts` with `executeUniversalSearch` — Admin: parallel LIKE on `users` (name/email/companyName) + `campaigns` (title); Client: tenant-scoped `campaigns.title` bound by `clientId`
-- [ ] Create `src/features/search/actions.ts` — `universalSearchAction` server action with NextAuth session gate
-- [ ] Create `src/hooks/use-debounce.ts` — 300ms debounce hook
-- [ ] Refactor `src/components/admin-topbar.tsx` — integrate `useSession`, wire debounced search to server action, render floating results dropdown with Escape/click-outside dismiss
-- [ ] Remove local search input from `src/features/clients/components/clients-live-table.tsx`
-- [ ] Verify build passes (`npm run build` — zero TypeScript errors, no `any`, no lint violations)
-- [ ] Verify zero data leak: CLIENT cannot see other accounts' search results
+<!-- Add goals here -->
 
 ## Notes
 
-- **Spec source:** `@context/features/global-header-search-spec.md`
-- **Existing header:** `src/components/admin-topbar.tsx` (contains static search input with `placeholder="Search clients, campaigns..."`)
-- **No `src/components/shared/` dir exists** — use existing `src/components/admin-topbar.tsx` path
-- **No `src/hooks/` dir exists** — will be created
-- **Visual:** Premium Corporate Light Slate — `bg-white`, `border-slate-100`, `ring-[#2563eb]` focus, floating overlay `shadow-xl rounded-xl`
-- **DB:** `users` (id, name, email, companyName, role) + `campaigns` (id, title, clientId, status) via Drizzle `like`/`or`/`and`/`eq`
-- **Auth:** `useSession()` from `next-auth/react` inside client component; session.user.role/uid for query routing
-- **Type safety:** strict TypeScript, ban on `any`
+<!-- Add notes here -->
 
 ## History
+
+- **2026-07-30** — Universal Header Search Command Center (Phase 3 Layout Integration) implemented on `feature/universal-header-search-command-center-phase-3-layout-integration`. Created `src/features/search/queries.ts` with `executeUniversalSearch` — Admin parallel LIKE on `users` (name/email/companyName) + `campaigns` (title), Client tenant-scoped campaigns by `clientId`. Created `src/features/search/actions.ts` with NextAuth session gate. Created `src/hooks/use-debounce.ts` — 300ms debounce hook. Refactored `src/components/admin-topbar.tsx` with `useSession` gate, debounced search, floating results dropdown (Escape/click-outside dismiss), clear button, and centered mobile search overlay. Removed local filter input from `clients-live-table.tsx`. Updated `drizzle-orm` to `^0.45.2` to resolve `@auth/drizzle-adapter` peer dependency. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/global-header-search-spec.md`.
 
 - **2026-07-29** — Corporate Client Direct Agency Message Pipeline (Phase 3 Final Core) implemented on `feature/corporate-client-direct-agency-message-pipeline-phase-3-final-core`. Verified `getClientChatHistory(clientId)` query correctness. Added `revalidatePath('/admin/messages')` to `sendClientMessageAction` for cross-portal cache sync. Replaced hardcoded `SEEDED_CLIENT_ID` in client messages page with `await auth()` session extraction, enforced tenant data isolation. Updated accent colors from `#3B5FE0` to `#2563eb` across both client and admin chat UIs. Added real-time online/offline presence via Upstash Redis (`src/lib/presence.ts`) with 40s TTL heartbeat, `heartbeatAction`/`checkPresenceAction` server actions, and dynamic Active now/Offline indicators on both portals. Created `middleware.ts` with server-side role-based route enforcement and added JWT/session callbacks to `auth.config.ts` for middleware role extraction. Build passes cleanly. Built per `context/features/client-messages-spec.md`.
 
