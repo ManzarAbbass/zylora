@@ -3,14 +3,33 @@
 import { randomUUID } from "node:crypto";
 import { hash } from "bcryptjs";
 import { and, eq, gt } from "drizzle-orm";
+import { headers } from "next/headers";
 import { Resend } from "resend";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { signOut } from "@/auth";
+import { loginRateLimiter, recoveryRateLimiter } from "@/lib/rate-limit";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
+
+export async function loginAction(email: string, password: string) {
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
+  const trackingKey = `${ip}:${email}`;
+
+  try {
+    const { success } = await loginRateLimiter.limit(trackingKey);
+    if (!success) {
+      return { success: false as const, data: null, error: "rate_limited" };
+    }
+  } catch {
+    console.warn("[RateLimit] Upstash Redis unreachable — login rate limit check skipped.");
+  }
+
+  return { success: true as const, data: null, error: undefined };
+}
 
 export async function signOutAction() {
   await signOut({ redirectTo: "/login" });
@@ -61,6 +80,17 @@ export async function changePasswordAction(
 
 export async function requestPasswordResetAction(email: string) {
   try {
+    const headerStore = await headers();
+    const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
+
+    try {
+      const { success } = await recoveryRateLimiter.limit(ip);
+      if (!success) {
+        return { success: false as const, data: null, error: "rate_limited" };
+      }
+    } catch {
+      console.warn("[RateLimit] Upstash Redis unreachable — recovery rate limit check skipped.");
+    }
     const user = await db
       .select()
       .from(users)

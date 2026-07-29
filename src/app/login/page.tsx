@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Mail, Lock, TrendingUp, BarChart3, Shield, Users, Loader2, Eye, EyeOff } from "lucide-react";
+import { loginAction } from "@/features/auth/actions";
 import { Toaster, toast } from "sonner";
 
 interface Shape {
@@ -64,6 +65,20 @@ export default function LoginPage() {
   async function handleSignIn(emailVal: string, passwordVal: string) {
     setLoading(true);
     try {
+      const rateCheck = await loginAction(emailVal, passwordVal);
+
+      if (rateCheck?.error === "rate_limited") {
+        toast.error(
+          "Too many security validation attempts. Your access vector has been rate-limited. Please try again later.",
+        );
+        return;
+      }
+
+      if (rateCheck?.error === "check_failed") {
+        toast.error("Authentication failed. Please try again.");
+        return;
+      }
+
       const result = await signIn("credentials", {
         email: emailVal,
         password: passwordVal,
