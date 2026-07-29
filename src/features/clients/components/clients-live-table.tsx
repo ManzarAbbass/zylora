@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Search, DollarSign, Users, Megaphone, Percent, X } from "lucide-react";
+import { DollarSign, Users, Megaphone, Percent, X } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { onboardNewClientAction } from "@/features/clients/actions";
 import type { OnboardedClient } from "@/features/clients/queries";
@@ -52,7 +52,6 @@ interface Props {
 
 export function ClientsLiveTable({ clients, globalStats }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = useState("");
   const [onboardOpen, setOnboardOpen] = useState(false);
   const [dropdownTarget, setDropdownTarget] = useState<"header" | "table" | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -65,12 +64,6 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
   function scrollLeft() {
     scrollRef.current?.scrollBy({ left: -(scrollRef.current.clientWidth * 0.75), behavior: "smooth" });
   }
-
-  const filtered = clients.filter(
-    (c) =>
-      c.name.toLowerCase().includes(filter.toLowerCase()) ||
-      c.email.toLowerCase().includes(filter.toLowerCase()),
-  );
 
   const stats = globalStats
     ? [
@@ -156,16 +149,6 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
             <p className="mt-0.5 text-xs text-slate-500">Manage corporate contract parameters and active campaign allocations.</p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
-            <div className="relative w-full sm:w-auto">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="Filter clients by name or email..."
-                className="w-full rounded-lg border border-slate-200 py-2 pl-9 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-[#124768] focus:outline-none sm:w-56"
-              />
-            </div>
             <div className="relative">
               <button
                 onClick={() => setDropdownTarget(dropdownTarget === "table" ? null : "table")}
@@ -214,16 +197,14 @@ export function ClientsLiveTable({ clients, globalStats }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 && (
+                {clients.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-sm text-slate-400">
-                      {clients.length === 0
-                        ? "No onboarded client profiles discovered inside the database."
-                        : "No clients match your filter."}
+                      No onboarded client profiles discovered inside the database.
                     </td>
                   </tr>
                 )}
-                {filtered.map((client, idx) => (
+                {clients.map((client, idx) => (
                   <tr key={client.id} className="border-b border-slate-50 transition last:border-b-0 hover:bg-slate-50/50">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
