@@ -1,9 +1,20 @@
+import { auth } from "@/auth";
 import { Toaster } from "sonner";
-import { getApprovalsByClient } from "@/features/approvals/queries";
+import { getClientApprovalsQueue } from "@/features/approvals/queries";
 import ClientApprovalsGrid from "./approvals-grid";
 
 export default async function ClientApprovalsPage() {
-  const approvals = await getApprovalsByClient("31ef43a7-d86f-4455-960d-8dba5d197363");
+  const session = await auth();
+  const clientId = session?.user?.id;
+  if (!clientId) {
+    return (
+      <div className="rounded-xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+        <p className="text-sm text-slate-400">You must be logged in to view approvals.</p>
+      </div>
+    );
+  }
+
+  const approvals = await getClientApprovalsQueue(clientId);
 
   return (
     <div>

@@ -2,17 +2,33 @@
 
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/db";
 import { contentApprovals } from "@/db/schema";
 
+const approveSchema = z.object({
+  assetId: z.string().uuid(),
+});
+
+const rejectSchema = z.object({
+  assetId: z.string().uuid(),
+  feedbackText: z.string().min(1, "Feedback is required").max(500),
+});
+
 export async function approveAssetAction(assetId: string) {
+  const parsed = approveSchema.safeParse({ assetId });
+  if (!parsed.success) {
+    return { success: false as const, data: null, error: "Invalid asset ID" };
+  }
+
   try {
     await db
       .update(contentApprovals)
       .set({ status: "APPROVED" })
-      .where(eq(contentApprovals.id, assetId));
+      .where(eq(contentApprovals.id, parsed.data.assetId));
 
     revalidatePath("/client/approvals");
+    revalidatePath("/admin/approvals");
     return { success: true as const, data: null, error: undefined };
   } catch {
     return { success: false as const, data: null, error: "Failed to approve asset" };
@@ -20,13 +36,19 @@ export async function approveAssetAction(assetId: string) {
 }
 
 export async function rejectAssetAction(assetId: string, feedbackText: string) {
+  const parsed = rejectSchema.safeParse({ assetId, feedbackText });
+  if (!parsed.success) {
+    return { success: false as const, data: null, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
   try {
     await db
       .update(contentApprovals)
-      .set({ status: "REJECTED", feedback: feedbackText })
-      .where(eq(contentApprovals.id, assetId));
+      .set({ status: "REJECTED", feedback: parsed.data.feedbackText })
+      .where(eq(contentApprovals.id, parsed.data.assetId));
 
     revalidatePath("/client/approvals");
+    revalidatePath("/admin/approvals");
     return { success: true as const, data: null, error: undefined };
   } catch {
     return { success: false as const, data: null, error: "Failed to reject asset" };

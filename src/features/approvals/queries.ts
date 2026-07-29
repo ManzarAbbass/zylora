@@ -37,12 +37,13 @@ const globalAdminFields = {
   createdAt: contentApprovals.createdAt,
 } as const;
 
-export async function getApprovalsByClient(clientId: string) {
+export async function getClientApprovalsQueue(clientId: string) {
   return db
     .select(approvalFields)
     .from(contentApprovals)
     .innerJoin(campaigns, eq(contentApprovals.campaignId, campaigns.id))
-    .where(eq(campaigns.clientId, clientId));
+    .where(eq(campaigns.clientId, clientId))
+    .orderBy(desc(contentApprovals.createdAt));
 }
 
 export async function getGlobalAdminApprovalsQueue(): Promise<GlobalAdminApprovalItem[]> {

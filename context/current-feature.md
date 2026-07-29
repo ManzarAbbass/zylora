@@ -1,14 +1,28 @@
-# Current Feature
+# Current Feature: Corporate Client Content Approvals Portal & Review Board (Phase 3 Secure Isolation)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Refactor `getApprovalsByClient` → `getClientApprovalsQueue` in `src/features/approvals/queries.ts` — Drizzle inner join with campaigns, filter by dynamic `clientId`, sort `desc(createdAt)`, no hardcoded IDs
+- [ ] Update `approveAssetAction` in `src/features/approvals/actions.ts` — ensure `revalidatePath` fires for both `/client/approvals` and `/admin/approvals`
+- [ ] Update `rejectAssetAction` in `src/features/approvals/actions.ts` — ensure `revalidatePath` fires for both `/client/approvals` and `/admin/approvals`
+- [ ] Add Zod schema parsing in both server actions to validate inputs and block bad payloads
+- [ ] Refactor `src/app/client/approvals/page.tsx` — use `await auth()` to extract dynamic `session.user.id`, remove hardcoded placeholder UUID, pass to `getClientApprovalsQueue`
+- [ ] Verify tenant isolation: a logged-in client must never see another tenant's records
+- [ ] Run build, lint, typecheck to confirm zero errors
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec:** `context/features/client-approvals-spec.md`
+- **Design Standard:** Premium Corporate Light Slate — white cards on `bg-[#f8fafc]`, `border-slate-100`, approved cards `border-emerald-500 bg-emerald-50/50`, rejected cards `border-amber-500 bg-amber-50/50`
+- **Existing files already built (from admin approvals phase):** `src/features/approvals/queries.ts`, `src/features/approvals/actions.ts`, `src/app/client/approvals/approvals-grid.tsx`
+- **Key Gap:** Client approvals page (`page.tsx`) uses hardcoded UUID `"31ef43a7-d86f-4455-960d-8dba5d197363"` instead of dynamic `auth()` session
+- **Key Gap:** Server actions missing `revalidatePath('/admin/approvals')` for cross-panel sync
+- **Key Gap:** No Zod schema validation on server action inputs
+- **Enforcement:** Strict `'use client'` only on interactive sub-components (already correct), Zod for input mutations, `try/catch` + Sonner toast pattern on all server actions
+- **Schema anchors:** `content_approvals` table, `approvalStatusEnum` in `src/db/schema.ts`
+- **NextAuth v5:** Use `await auth()` from `@/auth` on server layer
 
 ## History
 
