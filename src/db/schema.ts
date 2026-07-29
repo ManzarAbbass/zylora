@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, uuid, text, integer, numeric, timestamp, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, text, integer, numeric, timestamp, primaryKey, boolean } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["ADMIN", "CLIENT"]);
 
@@ -18,6 +18,9 @@ export const users = pgTable("users", {
   resetTokenExpires: timestamp("reset_token_expires", { mode: "date" }),
   failedAttempts: integer("failed_attempts").default(0).notNull(),
   lockedUntil: timestamp("locked_until", { mode: "date" }),
+  emailNotifications: boolean("email_notifications").default(true).notNull(),
+  campaignUpdates: boolean("campaign_updates").default(true).notNull(),
+  approvalAlerts: boolean("approval_alerts").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

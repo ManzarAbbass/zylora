@@ -2,12 +2,15 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { LayoutClient } from "@/components/layout-client";
 import { SettingsForm } from "./settings-form";
+import { getUserNotificationPrefs } from "@/features/settings/queries";
 
 export default async function SettingsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
   const { name, email, role, image } = session.user;
+
+  const prefs = await getUserNotificationPrefs(session.user.id);
 
   return (
     <LayoutClient
@@ -26,7 +29,13 @@ export default async function SettingsPage() {
           </p>
         </div>
 
-        <SettingsForm />
+        <SettingsForm
+          initialPrefs={{
+            emailNotifications: prefs?.emailNotifications ?? true,
+            campaignUpdates: prefs?.campaignUpdates ?? true,
+            approvalAlerts: prefs?.approvalAlerts ?? true,
+          }}
+        />
       </div>
     </LayoutClient>
   );

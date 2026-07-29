@@ -4,11 +4,17 @@ import { useState } from "react";
 import { Bell, Key, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { changePasswordAction } from "@/features/auth/actions";
+import { updateNotificationPrefsAction } from "@/features/settings/actions";
+import type { UserNotificationPrefs } from "@/features/settings/queries";
 
-export function SettingsForm() {
-  const [notifyEmail, setNotifyEmail] = useState(true);
-  const [notifyCampaigns, setNotifyCampaigns] = useState(true);
-  const [notifyApprovals, setNotifyApprovals] = useState(true);
+interface Props {
+  initialPrefs: UserNotificationPrefs;
+}
+
+export function SettingsForm({ initialPrefs }: Props) {
+  const [notifyEmail, setNotifyEmail] = useState(initialPrefs.emailNotifications);
+  const [notifyCampaigns, setNotifyCampaigns] = useState(initialPrefs.campaignUpdates);
+  const [notifyApprovals, setNotifyApprovals] = useState(initialPrefs.approvalAlerts);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -16,6 +22,26 @@ export function SettingsForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  async function handleToggle(field: string, value: boolean) {
+    setToggling(field);
+    const prefs = {
+      emailNotifications: field === "email" ? value : notifyEmail,
+      campaignUpdates: field === "campaigns" ? value : notifyCampaigns,
+      approvalAlerts: field === "approvals" ? value : notifyApprovals,
+    };
+
+    const result = await updateNotificationPrefsAction(prefs);
+    setToggling(null);
+
+    if (!result.success) {
+      toast.error("Update Failed", { description: result.error });
+      return;
+    }
+
+    toast.success("Preferences Updated");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,7 +94,7 @@ export function SettingsForm() {
       <div className="rounded-lg border border-slate-100 bg-[#ffffff] shadow-sm">
         <div className="border-b border-slate-100 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <Bell className="size-4 text-[#3B5FE0]" />
+            <Bell className="size-4 text-[#2563eb]" />
             <h2 className="text-base font-semibold text-[#0f172a]">Notification Preferences</h2>
           </div>
         </div>
@@ -82,9 +108,14 @@ export function SettingsForm() {
               type="button"
               role="switch"
               aria-checked={notifyEmail}
-              onClick={() => setNotifyEmail(!notifyEmail)}
-              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                notifyEmail ? "bg-[#3B5FE0]" : "bg-slate-200"
+              disabled={toggling === "email"}
+              onClick={() => {
+                const next = !notifyEmail;
+                setNotifyEmail(next);
+                handleToggle("email", next);
+              }}
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors disabled:opacity-50 ${
+                notifyEmail ? "bg-[#2563eb]" : "bg-slate-200"
               }`}
             >
               <span
@@ -103,9 +134,14 @@ export function SettingsForm() {
               type="button"
               role="switch"
               aria-checked={notifyCampaigns}
-              onClick={() => setNotifyCampaigns(!notifyCampaigns)}
-              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                notifyCampaigns ? "bg-[#3B5FE0]" : "bg-slate-200"
+              disabled={toggling === "campaigns"}
+              onClick={() => {
+                const next = !notifyCampaigns;
+                setNotifyCampaigns(next);
+                handleToggle("campaigns", next);
+              }}
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors disabled:opacity-50 ${
+                notifyCampaigns ? "bg-[#2563eb]" : "bg-slate-200"
               }`}
             >
               <span
@@ -124,9 +160,14 @@ export function SettingsForm() {
               type="button"
               role="switch"
               aria-checked={notifyApprovals}
-              onClick={() => setNotifyApprovals(!notifyApprovals)}
-              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                notifyApprovals ? "bg-[#3B5FE0]" : "bg-slate-200"
+              disabled={toggling === "approvals"}
+              onClick={() => {
+                const next = !notifyApprovals;
+                setNotifyApprovals(next);
+                handleToggle("approvals", next);
+              }}
+              className={`self-start sm:self-auto relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors disabled:opacity-50 ${
+                notifyApprovals ? "bg-[#2563eb]" : "bg-slate-200"
               }`}
             >
               <span
@@ -142,7 +183,7 @@ export function SettingsForm() {
       <div className="rounded-lg border border-slate-100 bg-[#ffffff] shadow-sm">
         <div className="border-b border-slate-100 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <Key className="size-4 text-[#3B5FE0]" />
+            <Key className="size-4 text-[#2563eb]" />
             <h2 className="text-base font-semibold text-[#0f172a]">Secure Access Credentials</h2>
           </div>
         </div>
@@ -154,7 +195,7 @@ export function SettingsForm() {
                 type={showCurrent ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#2563eb] transition focus:ring-2"
                 placeholder="Enter current password"
                 required
                 autoComplete="current-password"
@@ -175,7 +216,7 @@ export function SettingsForm() {
                 type={showNew ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#2563eb] transition focus:ring-2"
                 placeholder="Enter new password"
                 required
                 minLength={8}
@@ -197,7 +238,7 @@ export function SettingsForm() {
                 type={showConfirm ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
+                className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#2563eb] transition focus:ring-2"
                 placeholder="Confirm new password"
                 required
                 minLength={8}
@@ -219,7 +260,7 @@ export function SettingsForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#3B5FE0] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3B5FE0]/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#2563eb] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2563eb]/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {submitting && <Loader2 className="size-4 animate-spin" />}
           Update Credentials

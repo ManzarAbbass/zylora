@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { Resend } from "resend";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { signOut } from "@/auth";
 import { passwordSchema } from "@/lib/password";
 import { logAuditEvent } from "@/lib/audit";
@@ -91,6 +93,8 @@ export async function changePasswordAction(
       .where(eq(users.id, user.id));
 
     await logAuditEvent(user.id, "password_change", { success: true });
+
+    revalidatePath("/settings");
 
     return { success: true as const, error: undefined };
   } catch (error) {
