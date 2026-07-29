@@ -3,7 +3,7 @@ import authConfig from "@/auth.config";
 
 const { auth } = NextAuth({ ...authConfig, secret: process.env.AUTH_SECRET });
 
-export { auth as middleware };
+export { auth as proxy };
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
