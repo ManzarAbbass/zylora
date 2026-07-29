@@ -10,7 +10,7 @@ import { executePasswordResetAction } from "@/features/auth/actions";
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const code = searchParams.get("code");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,21 +18,21 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!token) {
+    if (!code) {
       toast.error("Invalid reset link. Please request a new password reset.");
     }
-  }, [token]);
+  }, [code]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!token) {
+    if (!code) {
       toast.error("Invalid reset link. Please request a new password reset.");
       return;
     }
 
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters.");
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      toast.error("Password must be at least 8 characters with uppercase, lowercase, digit, and special character.");
       return;
     }
 
@@ -43,7 +43,7 @@ function ResetPasswordForm() {
 
     setLoading(true);
     try {
-      const result = await executePasswordResetAction(token, password);
+      const result = await executePasswordResetAction(code, password);
       if (!result.success) {
         toast.error(result.error ?? "Failed to reset password.");
         return;
@@ -129,7 +129,7 @@ function ResetPasswordForm() {
 
           <button
             type="submit"
-            disabled={loading || !token}
+            disabled={loading || !code}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3B5FE0] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2A4CC7] focus:outline-none focus:ring-2 focus:ring-[#3B5FE0] focus:ring-offset-2 disabled:opacity-60"
           >
             {loading && <Loader2 className="size-4 animate-spin" />}
@@ -155,12 +155,15 @@ function Fallback() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
+    <>
+      <meta name="referrer" content="no-referrer" />
+      <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
       <Suspense fallback={<Fallback />}>
         <ResetPasswordForm />
       </Suspense>
 
       <Toaster position="bottom-right" richColors />
     </div>
+    </>
   );
 }

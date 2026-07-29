@@ -1,14 +1,32 @@
-# Current Feature
+# Current Feature: Auth Security Fixes — AUTH_SECURITY_REVIEW Remediation
 
 ## Status: Complete
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] H1: Add rate limiting to `changePasswordAction` and `executePasswordResetAction` (5/15min sliding window)
+- [ ] H2: Move reset token from URL query param to POST-only hidden form field
+- [ ] H3: Hash reset tokens (SHA-256) before storing in DB; look up by hash on reset
+- [ ] M1: Replace hardcoded `"ahmed@clothing.com"` in client layout with `session.user.email`
+- [ ] M2: Add role assertion (`ADMIN`/`CLIENT`) in admin and client layouts after `auth()` call
+- [ ] M3: Add zod password complexity — min 8, 1 uppercase, 1 lowercase, 1 digit, 1 special char
+- [ ] M4: Log password change events (user ID, timestamp, success/failure) to `audit_logs` table
+- [ ] L1: Add `failedAttempts`/`lockedUntil` columns to users table; implement lockout in authorize
+- [ ] L2: Normalize forgot-password response timing with fixed delay on early-return path
+- [ ] L3: Validate `RESEND_API_KEY` at startup or return explicit error in action instead of silent success
+- [ ] L4: Add `autoComplete`, `required`, `minLength` attributes to settings-form password inputs
 
 ## Notes
 
-<!-- Add notes here -->
+- Source: `docs/audit-results/AUTH_SECURITY_REVIEW.md` — all findings cross-checked against current codebase
+- H1 already partially implemented: `loginAction` and `requestPasswordResetAction` have Upstash rate limiters in `src/lib/rate-limit.ts`; need to extend existing `loginRateLimiter`/`recoveryRateLimiter` or create new limiters for remaining actions
+- H2 cannot fully remove token from URL (email link must carry it) — use two-legged approach: link carries short-lived `code`, page exchanges it for token via server-side fetch; or simpler: read from POST body instead of `searchParams`
+- H3 requires schema migration for `resetTokenHash` column; old `resetToken` column can be repurposed or removed
+- M2 already partially mitigated by `auth.config.ts:47-53` middleware role checks — layouts need aligned guard to prevent render-level exposure
+- M4 requires new `audit_logs` table (id, userId, action, metadata, timestamp)
+- L1 requires new columns on `users` table + schema migration
+- L3 decision: startup fail vs runtime explicit error — prefer startup validation to fail fast
+- L4: reset-password page already has `required` and `minLength`; only settings-form needs fixing
 
 ## History
 

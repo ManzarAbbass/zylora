@@ -1,6 +1,6 @@
 "use server"
 
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHash } from "node:crypto";
 import { hash } from "bcryptjs";
 import { and, eq, gt } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -8,7 +8,14 @@ import { Resend } from "resend";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { signOut } from "@/auth";
-import { loginRateLimiter, recoveryRateLimiter } from "@/lib/rate-limit";
+import { passwordSchema } from "@/lib/password";
+import { logAuditEvent } from "@/lib/audit";
+import {
+  loginRateLimiter,
+  recoveryRateLimiter,
+  passwordChangeRateLimiter,
+  resetExecutionRateLimiter,
+} from "@/lib/rate-limit";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -40,10 +47,24 @@ export async function changePasswordAction(
   newPassword: string,
 ) {
   try {
+    const parsed = passwordSchema.safeParse(newPassword);
+    if (!parsed.success) {
+      return { success: false as const, error: parsed.error.issues[0]?.message ?? "Invalid password." };
+    }
+
     const { auth } = await import("@/auth");
     const session = await auth();
     if (!session?.user?.id) {
       return { success: false as const, error: "Unauthorized." };
+    }
+
+    try {
+      const { success } = await passwordChangeRateLimiter.limit(session.user.id);
+      if (!success) {
+        return { success: false as const, error: "rate_limited" };
+      }
+    } catch {
+      console.warn("[RateLimit] Upstash Redis unreachable — password change rate limit check skipped.");
     }
 
     const user = await db
@@ -68,6 +89,8 @@ export async function changePasswordAction(
       .update(users)
       .set({ password: hashedPassword })
       .where(eq(users.id, user.id));
+
+    await logAuditEvent(user.id, "password_change", { success: true });
 
     return { success: true as const, error: undefined };
   } catch (error) {
@@ -97,19 +120,25 @@ export async function requestPasswordResetAction(email: string) {
       .where(eq(users.email, email))
       .then((rows) => rows[0] ?? null);
 
+    if (!resend) {
+      return { success: false as const, data: null, error: "Password reset service is not configured. Please contact support." };
+    }
+
     if (!user) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return { success: true as const, data: null, error: undefined };
     }
 
-    const token = randomUUID();
+    const code = randomUUID();
+    const codeHash = createHash("sha256").update(code).digest("hex");
     const expires = new Date(Date.now() + 3600000);
 
     await db
       .update(users)
-      .set({ resetToken: token, resetTokenExpires: expires })
+      .set({ resetTokenHash: codeHash, resetTokenExpires: expires })
       .where(eq(users.id, user.id));
 
-    const resetUrl = `${process.env.AUTH_URL || "http://localhost:3000"}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.AUTH_URL || "http://localhost:3000"}/reset-password?code=${code}`;
 
     if (resend) {
       await resend.emails.send({
@@ -136,15 +165,34 @@ export async function requestPasswordResetAction(email: string) {
 }
 
 export async function executePasswordResetAction(
-  token: string,
+  code: string,
   newPassword: string,
 ) {
   try {
+    const parsed = passwordSchema.safeParse(newPassword);
+    if (!parsed.success) {
+      return { success: false as const, data: null, error: parsed.error.issues[0]?.message ?? "Invalid password." };
+    }
+
+    const headerStore = await headers();
+    const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
+
+    try {
+      const { success } = await resetExecutionRateLimiter.limit(ip);
+      if (!success) {
+        return { success: false as const, data: null, error: "rate_limited" };
+      }
+    } catch {
+      console.warn("[RateLimit] Upstash Redis unreachable — reset execution rate limit check skipped.");
+    }
+
+    const codeHash = createHash("sha256").update(code).digest("hex");
+
     const user = await db
       .select()
       .from(users)
       .where(
-        and(eq(users.resetToken, token), gt(users.resetTokenExpires, new Date())),
+        and(eq(users.resetTokenHash, codeHash), gt(users.resetTokenExpires, new Date())),
       )
       .then((rows) => rows[0] ?? null);
 
@@ -162,7 +210,7 @@ export async function executePasswordResetAction(
       .update(users)
       .set({
         password: hashedPassword,
-        resetToken: null,
+        resetTokenHash: null,
         resetTokenExpires: null,
       })
       .where(eq(users.id, user.id));

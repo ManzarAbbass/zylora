@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 export default async function ClientLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  const clientId = await getClientIdByEmail("ahmed@clothing.com");
+  if (!session?.user?.email || session.user.role !== "CLIENT") notFound();
+  const clientId = await getClientIdByEmail(session.user.email);
   if (!clientId) notFound();
 
   const [pendingApprovals, unreadMessages] = await Promise.all([

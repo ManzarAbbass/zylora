@@ -36,6 +36,13 @@
       "when": 1785175022074,
       "tag": "0004_nifty_vector",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785358751063,
+      "tag": "0005_mixed_master_chief",
+      "breakpoints": true
     }
   ]
 }

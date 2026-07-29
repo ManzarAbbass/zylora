@@ -27,9 +27,9 @@ export function SettingsForm() {
       return;
     }
 
-    if (newPassword.length < 8) {
+    if (newPassword.length < 8 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[^A-Za-z0-9]/.test(newPassword)) {
       toast.error("Validation Error", {
-        description: "New password must be at least 8 characters.",
+        description: "Password must be at least 8 characters with uppercase, lowercase, digit, and special character.",
       });
       return;
     }
@@ -156,6 +156,8 @@ export function SettingsForm() {
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
                 placeholder="Enter current password"
+                required
+                autoComplete="current-password"
               />
               <button
                 type="button"
@@ -175,6 +177,9 @@ export function SettingsForm() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
                 placeholder="Enter new password"
+                required
+                minLength={8}
+                autoComplete="new-password"
               />
               <button
                 type="button"
@@ -194,6 +199,9 @@ export function SettingsForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 py-2 pr-10 text-sm text-[#0f172a] placeholder-slate-400 outline-none ring-[#3B5FE0] transition focus:ring-2"
                 placeholder="Confirm new password"
+                required
+                minLength={8}
+                autoComplete="new-password"
               />
               <button
                 type="button"

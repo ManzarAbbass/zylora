@@ -17,3 +17,15 @@ export const recoveryRateLimiter = new Ratelimit({
   limiter: Ratelimit.slidingWindow(3, "3600 s"),
   prefix: "@zylora/recovery-shield",
 });
+
+export const passwordChangeRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "900 s"),
+  prefix: "@zylora/password-change-shield",
+});
+
+export const resetExecutionRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "3600 s"),
+  prefix: "@zylora/reset-execution-shield",
+});
