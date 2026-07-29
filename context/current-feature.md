@@ -1,25 +1,18 @@
-# Current Feature: Corporate Client Direct Agency Message Pipeline (Phase 3 Final Core)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] **§1 — Query extension** — `getClientChatHistory(clientId)` already exists. Verify query correctness.
-- [ ] **§2 — Server Action fix** — Add `revalidatePath('/admin/messages')` to `sendClientMessageAction` for cross-portal cache sync.
-- [ ] **§3 — Page hydration** — Replace hardcoded `SEEDED_CLIENT_ID` in `src/app/client/messages/page.tsx` with `await auth()` session extraction (`clientId = session.user.id`).
-- [ ] **§4 — Tenant data isolation** — Confirm `getClientChatHistory(clientId)` uses dynamic session ID; no hardcoded IDs remain.
-- [ ] **§5 — Visual compliance** — Verify `h-[calc(100vh-theme(spacing.16))]` height lock, auto-scroll, `#2563eb`/`#4f46e5` accent colors, Premium Corporate Light Slate theme.
-- [ ] **§6 — Type safety** — Zero `any` types, strict TypeScript throughout.
+<!-- Add goals here -->
 
 ## Notes
 
-- **Spec Reference:** `context/features/client-messages-spec.md`
-- **Core files:** `src/features/messages/actions.ts`, `src/features/messages/queries.ts`, `src/app/client/messages/page.tsx`, `src/app/client/messages/chat-client.tsx`
-- **DB Schema:** `messages` table in `src/db/schema.ts` — columns: `id`, `clientId` (FK→users), `senderRole` (ADMIN|CLIENT), `messageText`, `createdAt`
-- **Design:** Chat bubbles — client right-aligned (#3B5FE0 currently, target #2563eb/#4f46e5), admin left-aligned (bg-slate-100). Full-height viewport scroller, input bar at bottom. Sonner toast on send.
-- **Session Gate:** Must use `auth()` from `@/auth` — never hardcode UUIDs.
+<!-- Add notes here -->
 
 ## History
+
+- **2026-07-29** — Corporate Client Direct Agency Message Pipeline (Phase 3 Final Core) implemented on `feature/corporate-client-direct-agency-message-pipeline-phase-3-final-core`. Verified `getClientChatHistory(clientId)` query correctness. Added `revalidatePath('/admin/messages')` to `sendClientMessageAction` for cross-portal cache sync. Replaced hardcoded `SEEDED_CLIENT_ID` in client messages page with `await auth()` session extraction, enforced tenant data isolation. Updated accent colors from `#3B5FE0` to `#2563eb` across both client and admin chat UIs. Added real-time online/offline presence via Upstash Redis (`src/lib/presence.ts`) with 40s TTL heartbeat, `heartbeatAction`/`checkPresenceAction` server actions, and dynamic Active now/Offline indicators on both portals. Created `middleware.ts` with server-side role-based route enforcement and added JWT/session callbacks to `auth.config.ts` for middleware role extraction. Build passes cleanly. Built per `context/features/client-messages-spec.md`.
 
 - **2026-07-29** — Corporate Client Financial Analytics Ledger Hub (Phase 3 Secure Isolation) implemented on `feature/corporate-client-financial-analytics-ledger-hub-phase-3-secure-isolation`. Added `getClientExecutiveReportsData(clientId)` in `src/features/clients/queries.ts` — Drizzle aggregation of campaigns by clientId with total spend (from monthlyTrends), total revenue, and net ROI. Created `src/app/client/reports/page.tsx` as async Server Component with session auth gate, "Business Performance Ledger" header, 3 summary cards (Total Investment, Attributed Revenue, Net Profit Margin in `$X,XXX.XX` format with amber/blue ROI coloring), and campaign performance grid (Title, Emails Sent, CTR, Budget Spend, Revenue). Updated client sidebar label to "Financial Report" already routed to `/client/reports`. Enforced strict tenant data isolation — query locked to `session.user.id` with zero-state `"$0.00"` defaults. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/client-reports-spec.md`.
 
