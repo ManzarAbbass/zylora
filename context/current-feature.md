@@ -1,34 +1,18 @@
-# Current Feature: Auth Security Fixes — AUTH_SECURITY_REVIEW Remediation
+# Current Feature
 
 ## Status: Complete
 
 ## Goals
 
-- [ ] H1: Add rate limiting to `changePasswordAction` and `executePasswordResetAction` (5/15min sliding window)
-- [ ] H2: Move reset token from URL query param to POST-only hidden form field
-- [ ] H3: Hash reset tokens (SHA-256) before storing in DB; look up by hash on reset
-- [ ] M1: Replace hardcoded `"ahmed@clothing.com"` in client layout with `session.user.email`
-- [ ] M2: Add role assertion (`ADMIN`/`CLIENT`) in admin and client layouts after `auth()` call
-- [ ] M3: Add zod password complexity — min 8, 1 uppercase, 1 lowercase, 1 digit, 1 special char
-- [ ] M4: Log password change events (user ID, timestamp, success/failure) to `audit_logs` table
-- [ ] L1: Add `failedAttempts`/`lockedUntil` columns to users table; implement lockout in authorize
-- [ ] L2: Normalize forgot-password response timing with fixed delay on early-return path
-- [ ] L3: Validate `RESEND_API_KEY` at startup or return explicit error in action instead of silent success
-- [ ] L4: Add `autoComplete`, `required`, `minLength` attributes to settings-form password inputs
+<!-- Add goals here -->
 
 ## Notes
 
-- Source: `docs/audit-results/AUTH_SECURITY_REVIEW.md` — all findings cross-checked against current codebase
-- H1 already partially implemented: `loginAction` and `requestPasswordResetAction` have Upstash rate limiters in `src/lib/rate-limit.ts`; need to extend existing `loginRateLimiter`/`recoveryRateLimiter` or create new limiters for remaining actions
-- H2 cannot fully remove token from URL (email link must carry it) — use two-legged approach: link carries short-lived `code`, page exchanges it for token via server-side fetch; or simpler: read from POST body instead of `searchParams`
-- H3 requires schema migration for `resetTokenHash` column; old `resetToken` column can be repurposed or removed
-- M2 already partially mitigated by `auth.config.ts:47-53` middleware role checks — layouts need aligned guard to prevent render-level exposure
-- M4 requires new `audit_logs` table (id, userId, action, metadata, timestamp)
-- L1 requires new columns on `users` table + schema migration
-- L3 decision: startup fail vs runtime explicit error — prefer startup validation to fail fast
-- L4: reset-password page already has `required` and `minLength`; only settings-form needs fixing
+<!-- Add notes here -->
 
 ## History
+
+- **2026-07-30** — Auth Security Fixes — AUTH_SECURITY_REVIEW Remediation implemented on `feature/auth-security-fixes-auth-security-review-remediation`. Added rate limiting to `changePasswordAction` (3/15min) and `executePasswordResetAction` (10/1hr) via Upstash Redis sliding window limiters. Implemented two-legged password reset flow: SHA-256 hashed codes in DB with one-time `?code=` URL param instead of raw token, `referrer=no-referrer` meta tag. Replaced hardcoded `"ahmed@clothing.com"` in client layout with `session.user.email`. Added role assertion (`ADMIN`/`CLIENT`) + `notFound()` guards in both admin and client layouts. Created shared `passwordSchema` in `src/lib/password.ts` — enforces uppercase, lowercase, digit, and special character with Zod validation on all password mutations. Created `audit_logs` table + `logAuditEvent()` utility; audit trail on every password change. Added `failedAttempts`/`lockedUntil` columns to users table; 5 failed attempts triggers 15-minute account lockout in `authorize()`. Normalized forgot-password response timing with 1s delay on early-return path. Added clear error on missing `RESEND_API_KEY`. Added `autoComplete`, `required`, `minLength` HTML attributes to settings password inputs. Build passes cleanly — zero TypeScript errors. Per `docs/audit-results/AUTH_SECURITY_REVIEW.md`.
 
 - **2026-07-30** — Universal Header Search Command Center (Phase 3 Layout Integration) implemented on `feature/universal-header-search-command-center-phase-3-layout-integration`. Created `src/features/search/queries.ts` with `executeUniversalSearch` — Admin parallel LIKE on `users` (name/email/companyName) + `campaigns` (title), Client tenant-scoped campaigns by `clientId`. Created `src/features/search/actions.ts` with NextAuth session gate. Created `src/hooks/use-debounce.ts` — 300ms debounce hook. Refactored `src/components/admin-topbar.tsx` with `useSession` gate, debounced search, floating results dropdown (Escape/click-outside dismiss), clear button, and centered mobile search overlay. Removed local filter input from `clients-live-table.tsx`. Updated `drizzle-orm` to `^0.45.2` to resolve `@auth/drizzle-adapter` peer dependency. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/global-header-search-spec.md`.
 
