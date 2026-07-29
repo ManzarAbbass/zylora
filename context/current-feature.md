@@ -1,28 +1,14 @@
-# Current Feature: Corporate Client Content Approvals Portal & Review Board (Phase 3 Secure Isolation)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Refactor `getApprovalsByClient` → `getClientApprovalsQueue` in `src/features/approvals/queries.ts` — Drizzle inner join with campaigns, filter by dynamic `clientId`, sort `desc(createdAt)`, no hardcoded IDs
-- [ ] Update `approveAssetAction` in `src/features/approvals/actions.ts` — ensure `revalidatePath` fires for both `/client/approvals` and `/admin/approvals`
-- [ ] Update `rejectAssetAction` in `src/features/approvals/actions.ts` — ensure `revalidatePath` fires for both `/client/approvals` and `/admin/approvals`
-- [ ] Add Zod schema parsing in both server actions to validate inputs and block bad payloads
-- [ ] Refactor `src/app/client/approvals/page.tsx` — use `await auth()` to extract dynamic `session.user.id`, remove hardcoded placeholder UUID, pass to `getClientApprovalsQueue`
-- [ ] Verify tenant isolation: a logged-in client must never see another tenant's records
-- [ ] Run build, lint, typecheck to confirm zero errors
+<!-- Add goals here -->
 
 ## Notes
 
-- **Spec:** `context/features/client-approvals-spec.md`
-- **Design Standard:** Premium Corporate Light Slate — white cards on `bg-[#f8fafc]`, `border-slate-100`, approved cards `border-emerald-500 bg-emerald-50/50`, rejected cards `border-amber-500 bg-amber-50/50`
-- **Existing files already built (from admin approvals phase):** `src/features/approvals/queries.ts`, `src/features/approvals/actions.ts`, `src/app/client/approvals/approvals-grid.tsx`
-- **Key Gap:** Client approvals page (`page.tsx`) uses hardcoded UUID `"31ef43a7-d86f-4455-960d-8dba5d197363"` instead of dynamic `auth()` session
-- **Key Gap:** Server actions missing `revalidatePath('/admin/approvals')` for cross-panel sync
-- **Key Gap:** No Zod schema validation on server action inputs
-- **Enforcement:** Strict `'use client'` only on interactive sub-components (already correct), Zod for input mutations, `try/catch` + Sonner toast pattern on all server actions
-- **Schema anchors:** `content_approvals` table, `approvalStatusEnum` in `src/db/schema.ts`
-- **NextAuth v5:** Use `await auth()` from `@/auth` on server layer
+<!-- Add notes here -->
 
 ## History
 
@@ -39,3 +25,5 @@
 - **2026-07-27** — Secure Credentials Forgot & Reset Password Pipeline (Phase 3 Extra) implemented on `feature/secure-credentials-forgot-reset-password-pipeline-phase-3-extra`. Extended `users` table schema with `resetToken`/`resetTokenExpires` columns. Created `requestPasswordResetAction` (crypto.randomUUID, 1hr expiry, Resend email delivery via onboarding@resend.dev) and `executePasswordResetAction` (token validation, bcryptjs 12-round hashing, token flush). Added gray "Forgot Password?" link to `/login`. Built `/forgot-password` page with email form and Sonner success toast. Built `/reset-password` page with Suspense-wrapped token extraction, new password + confirm fields, and redirect to `/login`. All crypto wrapped in try/catch. Zero `any` types, build clean. Built per `context/features/forgot-password-spec.md`. Extended `src/features/approvals/queries.ts` with `getGlobalAdminApprovalsQueue` — Drizzle inner join across `content_approvals` → `campaigns` → `users` returning Asset ID, Campaign Title, Client Company Name, Content Type, Preview URL, Status, Feedback, Created Timestamp, sorted by `createdAt DESC`. Extended `src/features/approvals/actions.ts` with `resubmitRevisedAssetAction` — sets `status → 'PENDING'`, clears `feedback → null`, revalidates `/admin/approvals` and `/client/approvals`. Created `src/app/admin/approvals/page.tsx` as Async Server Component. Created `AdminApprovalsGrid` client component with multi-column card grid, status badges (slate/emerald/amber), status-based sections (Pending Review / Changes Requested / Approved), `[Re-Submit Revised Deliverable]` button on REJECTED cards via `useTransition`, Sonner toasts, and empty state placeholder. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-approvals-spec.md`.
 
 - **2026-07-29** — Rate Limiting Shield implemented on `feature/rate-limiting-shield`. Created `src/lib/rate-limit.ts` with two Upstash Redis sliding-window limiters (login 5/15min prefix `@zylora/login-shield`, recovery 3/1hr prefix `@zylora/recovery-shield`). Injected `loginAction` server action with IP+email rate check before NextAuth credentials flow, and recovery rate gate into `requestPasswordResetAction`. Wired login page with spec-matching Sonner toast on rate-limit rejection. Implemented fail-open strategy: `console.warn` on Redis outage, auth pipeline proceeds. Strict TypeScript, zero `any` types. Built per `context/features/rate-limiting-spec.md`.
+
+- **2026-07-29** — Corporate Client Content Approvals Portal & Review Board (Phase 3 Secure Isolation) implemented on `feature/corporate-client-content-approvals-portal-review-board-phase-3-secure-isolation`. Renamed `getApprovalsByClient` → `getClientApprovalsQueue` with `desc(createdAt)` sorting. Added Zod schema validation (`uuid` + `feedback min 1 max 500`) to both `approveAssetAction` and `rejectAssetAction`. Added `revalidatePath('/admin/approvals')` to both server actions for cross-panel cache sync. Replaced hardcoded placeholder UUID in `src/app/client/approvals/page.tsx` with dynamic `await auth()` session extraction. Enforced strict tenant data isolation — each client can only see their own company's asset records. Build passes cleanly. Built per `context/features/client-approvals-spec.md`.
