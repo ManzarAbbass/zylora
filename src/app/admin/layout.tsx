@@ -4,6 +4,8 @@ import { getAllPendingApprovalsCount } from "@/features/approvals/queries";
 import { getUnreadClientMessagesCount } from "@/features/messages/queries";
 import { LayoutClient } from "@/components/layout-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") notFound();

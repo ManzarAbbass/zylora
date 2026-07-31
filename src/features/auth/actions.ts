@@ -13,7 +13,6 @@ import { signOut } from "@/auth";
 import { passwordSchema } from "@/lib/password";
 import { logAuditEvent } from "@/lib/audit";
 import {
-  loginRateLimiter,
   recoveryRateLimiter,
   passwordChangeRateLimiter,
   resetExecutionRateLimiter,
@@ -22,23 +21,6 @@ import {
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
-
-export async function loginAction(email: string, password: string) {
-  const headerStore = await headers();
-  const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
-  const trackingKey = `${ip}:${email}`;
-
-  try {
-    const { success } = await loginRateLimiter.limit(trackingKey);
-    if (!success) {
-      return { success: false as const, data: null, error: "rate_limited" };
-    }
-  } catch {
-    console.warn("[RateLimit] Upstash Redis unreachable — login rate limit check skipped.");
-  }
-
-  return { success: true as const, data: null, error: undefined };
-}
 
 export async function signOutAction() {
   await signOut({ redirectTo: "/login" });
@@ -61,9 +43,11 @@ export async function changePasswordAction(
     }
 
     try {
-      const { success } = await passwordChangeRateLimiter.limit(session.user.id);
-      if (!success) {
-        return { success: false as const, error: "rate_limited" };
+      if (passwordChangeRateLimiter) {
+        const { success } = await passwordChangeRateLimiter.limit(session.user.id);
+        if (!success) {
+          return { success: false as const, error: "rate_limited" };
+        }
       }
     } catch {
       console.warn("[RateLimit] Upstash Redis unreachable — password change rate limit check skipped.");
@@ -111,9 +95,11 @@ export async function requestPasswordResetAction(email: string) {
     const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
 
     try {
-      const { success } = await recoveryRateLimiter.limit(ip);
-      if (!success) {
-        return { success: false as const, data: null, error: "rate_limited" };
+      if (recoveryRateLimiter) {
+        const { success } = await recoveryRateLimiter.limit(ip);
+        if (!success) {
+          return { success: false as const, data: null, error: "rate_limited" };
+        }
       }
     } catch {
       console.warn("[RateLimit] Upstash Redis unreachable — recovery rate limit check skipped.");
@@ -182,9 +168,11 @@ export async function executePasswordResetAction(
     const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
 
     try {
-      const { success } = await resetExecutionRateLimiter.limit(ip);
-      if (!success) {
-        return { success: false as const, data: null, error: "rate_limited" };
+      if (resetExecutionRateLimiter) {
+        const { success } = await resetExecutionRateLimiter.limit(ip);
+        if (!success) {
+          return { success: false as const, data: null, error: "rate_limited" };
+        }
       }
     } catch {
       console.warn("[RateLimit] Upstash Redis unreachable — reset execution rate limit check skipped.");
@@ -216,6 +204,8 @@ export async function executePasswordResetAction(
         password: hashedPassword,
         resetTokenHash: null,
         resetTokenExpires: null,
+        failedAttempts: 0,
+        lockedUntil: null,
       })
       .where(eq(users.id, user.id));
 

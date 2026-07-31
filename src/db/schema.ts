@@ -1,3 +1,4 @@
+import type { AdapterAccount } from "@auth/core/adapters";
 import { pgTable, pgEnum, uuid, text, integer, numeric, timestamp, primaryKey, boolean } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["ADMIN", "CLIENT"]);
@@ -67,7 +68,7 @@ export const accounts = pgTable(
     userId: uuid("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<string>().notNull(),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -122,5 +123,6 @@ export const messages = pgTable("messages", {
     .notNull(),
   senderRole: userRoleEnum("sender_role").notNull(),
   messageText: text("message_text").notNull(),
+  readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

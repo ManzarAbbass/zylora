@@ -7,6 +7,7 @@ interface Message {
   clientId: string;
   senderRole: "CLIENT" | "ADMIN";
   messageText: string;
+  readAt: Date | null;
   createdAt: Date;
 }
 
@@ -19,10 +20,9 @@ export default async function AdminMessagesPage() {
   const clientIds = threads.map((t) => t.id);
   const allMessages = clientIds.length > 0 ? await getChatMessagesByClientIds(clientIds) : {};
 
-  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000);
   const notificationBadges: Record<string, number> = {};
   for (const [clientId, msgs] of Object.entries(allMessages)) {
-    const unreadCount = msgs.filter((m) => m.senderRole === "CLIENT" && new Date(m.createdAt) > sevenDaysAgo).length;
+    const unreadCount = msgs.filter((m) => m.senderRole === "CLIENT" && !m.readAt).length;
     if (unreadCount > 0) {
       notificationBadges[clientId] = unreadCount;
     }

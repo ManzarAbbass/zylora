@@ -1,13 +1,14 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { DollarSign, Mail, Percent, BarChart3 } from "lucide-react";
+import { auth } from "@/auth";
 import { StatCard } from "@/components/stat-card";
 import { RevenueChart } from "@/components/revenue-chart";
 import { getCampaignsByClientId, getClientWorkspaceStats, getClientMonthlyTrends } from "@/features/campaigns/queries";
-import { getClientIdByEmail } from "@/features/clients/queries";
 
 export default async function ClientDashboardPage() {
-  const clientId = await getClientIdByEmail("ahmed@clothing.com");
-  if (!clientId) notFound();
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+  const clientId = session.user.id;
 
   const [campaigns, stats, monthlyTrends] = await Promise.all([
     getCampaignsByClientId(clientId),
@@ -21,7 +22,7 @@ export default async function ClientDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Good morning, Ahmed</h1>
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Good morning, {session.user.name ?? "there"}</h1>
         <p className="mt-1 text-sm text-slate-500">Here&apos;s how your campaigns are performing today</p>
       </div>
 

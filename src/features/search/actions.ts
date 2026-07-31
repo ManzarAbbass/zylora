@@ -6,12 +6,14 @@ import { executeUniversalSearch } from "./queries";
 export async function universalSearchAction(searchString: string) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { clients: [], campaigns: [] };
+    return { success: false as const, data: null, error: "Unauthorized." };
   }
 
-  return executeUniversalSearch(
+  const data = await executeUniversalSearch(
     searchString,
     session.user.role ?? "CLIENT",
     session.user.id,
   );
+
+  return { success: true as const, data, error: undefined };
 }

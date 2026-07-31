@@ -26,14 +26,14 @@ const adminNavItems = [
   { icon: BarChart3, label: "Client Analytics", href: "/admin/analytics", badge: null },
   { icon: CheckCircle2, label: "Asset Approvals", href: "/admin/approvals", badge: 4 },
   { icon: FileText, label: "Financial Reports", href: "/admin/reports", badge: null },
-  { icon: MessageSquare, label: "Communications", href: "/admin/messages", badge: 3 },
+  { icon: MessageSquare, label: "Communications", href: "/admin/messages", badge: null },
 ];
 
 const clientNavItems = [
   { icon: BarChart3, label: "Campaign Analytics", href: "/client/dashboard", badge: null },
   { icon: CheckCircle2, label: "Approvals Queue", href: "/client/approvals", badge: 4 },
   { icon: FileText, label: "Financial Report", href: "/client/reports", badge: null },
-  { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: 1 },
+  { icon: MessageSquare, label: "Agency Chat", href: "/client/messages", badge: null },
 ];
 
 interface AdminSidebarProps {
@@ -57,9 +57,10 @@ export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unread
     badge:
       item.label === "Asset Approvals" || item.label === "Approvals Queue"
         ? pendingApprovals ?? item.badge
-        : item.label === "Communications" || item.label === "Agency Chat"
-          ? unreadMessages ?? item.badge
-          : item.badge,
+        : item.badge,
+    isMessages:
+      item.label === "Communications" || item.label === "Agency Chat",
+    hasUnreadMessages: (unreadMessages ?? 0) > 0,
   }));
 
   return (
@@ -126,16 +127,24 @@ export function AdminSidebar({ onClose, role = "ADMIN", pendingApprovals, unread
                 {!collapsed && (
                   <>
                     <span className="flex-1 truncate">{item.label}</span>
-                    {item.badge && (
-                      <span
-                        className={`flex size-5 items-center justify-center rounded-full text-[10px] font-semibold ${
-                          isActive
-                            ? "bg-white text-[#124768]"
-                            : "bg-white/20 text-white"
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
+                    {item.isMessages ? (
+                      item.hasUnreadMessages && (
+                        <span className="flex size-2.5 items-center justify-center">
+                          <span className={`inline-block size-2.5 rounded-full ${isActive ? "bg-white" : "bg-[#3B5FE0]"}`} />
+                        </span>
+                      )
+                    ) : (
+                      item.badge && (
+                        <span
+                          className={`flex size-5 items-center justify-center rounded-full text-[10px] font-semibold ${
+                            isActive
+                              ? "bg-white text-[#124768]"
+                              : "bg-white/20 text-white"
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )
                     )}
                   </>
                 )}

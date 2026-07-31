@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Send, Paperclip, MessageSquare } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import { sendClientMessageAction, heartbeatAction, checkPresenceAction } from "@/features/messages/actions";
+import { sendClientMessageAction, heartbeatAction, checkPresenceAction, markMessagesReadAction } from "@/features/messages/actions";
 
 interface Message {
   id: string;
@@ -61,15 +61,21 @@ export default function ChatClient({ initialMessages, clientId, adminId }: ChatC
   }, [messages]);
 
   useEffect(() => {
-    heartbeatAction(clientId);
-    const hb = setInterval(() => heartbeatAction(clientId), 20000);
+    markMessagesReadAction(clientId);
+    const beat = () => {
+      if (document.visibilityState === "visible") heartbeatAction(clientId);
+    };
+    beat();
+    const hb = setInterval(beat, 20000);
     return () => clearInterval(hb);
   }, [clientId]);
 
   useEffect(() => {
     if (!adminId) return;
     const check = async () => {
-      const online = await checkPresenceAction(adminId);
+      if (document.visibilityState !== "visible") return;
+      const result = await checkPresenceAction(adminId);
+      const online = result.success ? (result.data ?? false) : false;
       setAdminOnline(online);
     };
     check();

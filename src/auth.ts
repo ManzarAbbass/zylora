@@ -1,9 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { db } from "@/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema";
+import { loginRateLimiter } from "@/lib/rate-limit";
 import authConfig from "./auth.config";
 
 const MAX_FAILED_ATTEMPTS = 5;
@@ -26,6 +28,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (!parsed.success) return null;
 
           const { email, password } = parsed.data;
+
+          const headerStore = await headers();
+          const ip = headerStore.get("x-forwarded-for") ?? "127.0.0.1";
+
+          if (loginRateLimiter) {
+            try {
+              const { success } = await loginRateLimiter.limit(`${ip}:${email}`);
+              if (!success) return null;
+            } catch {
+              console.warn("[RateLimit] Upstash Redis unreachable — login rate limit check skipped.");
+            }
+          }
 
           const { eq, sql } = await import("drizzle-orm");
           const bcrypt = await import("bcryptjs");

@@ -17,31 +17,31 @@ export interface AdminGlobalStats {
 }
 
 export async function getAdminGlobalStats(): Promise<AdminGlobalStats> {
-  const [revenueResult] = await db
-    .select({
-      total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
-    })
-    .from(campaigns);
-
-  const [clientCount] = await db
-    .select({
-      count: sql<number>`cast(count(*) as int)`,
-    })
-    .from(users)
-    .where(eq(users.role, "CLIENT"));
-
-  const [activeCount] = await db
-    .select({
-      count: sql<number>`cast(count(*) as int)`,
-    })
-    .from(campaigns)
-    .where(eq(campaigns.status, "ACTIVE"));
-
-  const [avgOpenRateResult] = await db
-    .select({
-      avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
-    })
-    .from(campaigns);
+  const [[revenueResult], [clientCount], [activeCount], [avgOpenRateResult]] =
+    await Promise.all([
+      db
+        .select({
+          total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
+        })
+        .from(campaigns),
+      db
+        .select({
+          count: sql<number>`cast(count(*) as int)`,
+        })
+        .from(users)
+        .where(eq(users.role, "CLIENT")),
+      db
+        .select({
+          count: sql<number>`cast(count(*) as int)`,
+        })
+        .from(campaigns)
+        .where(eq(campaigns.status, "ACTIVE")),
+      db
+        .select({
+          avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
+        })
+        .from(campaigns),
+    ]);
 
   return {
     totalRevenue: revenueResult?.total ?? "0",
@@ -59,33 +59,33 @@ export interface ClientWorkspaceStats {
 }
 
 export async function getClientWorkspaceStats(clientId: string): Promise<ClientWorkspaceStats> {
-  const [revenueResult] = await db
-    .select({
-      total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
-    })
-    .from(campaigns)
-    .where(eq(campaigns.clientId, clientId));
-
-  const [impressionsResult] = await db
-    .select({
-      total: sql<number>`coalesce(cast(sum(${campaigns.emailsSent}) as int), 0)`,
-    })
-    .from(campaigns)
-    .where(eq(campaigns.clientId, clientId));
-
-  const [avgOpenRateResult] = await db
-    .select({
-      avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
-    })
-    .from(campaigns)
-    .where(eq(campaigns.clientId, clientId));
-
-  const [activeCount] = await db
-    .select({
-      count: sql<number>`cast(count(*) as int)`,
-    })
-    .from(campaigns)
-    .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE")));
+  const [[revenueResult], [impressionsResult], [avgOpenRateResult], [activeCount]] =
+    await Promise.all([
+      db
+        .select({
+          total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
+        })
+        .from(campaigns)
+        .where(eq(campaigns.clientId, clientId)),
+      db
+        .select({
+          total: sql<number>`coalesce(cast(sum(${campaigns.emailsSent}) as int), 0)`,
+        })
+        .from(campaigns)
+        .where(eq(campaigns.clientId, clientId)),
+      db
+        .select({
+          avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
+        })
+        .from(campaigns)
+        .where(eq(campaigns.clientId, clientId)),
+      db
+        .select({
+          count: sql<number>`cast(count(*) as int)`,
+        })
+        .from(campaigns)
+        .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE"))),
+    ]);
 
   return {
     totalRevenue: revenueResult?.total ?? "0",

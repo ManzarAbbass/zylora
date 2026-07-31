@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Paperclip, Send } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import { sendAdminMessageAction, heartbeatAction, checkPresenceAction } from "@/features/messages/actions";
+import { sendAdminMessageAction, heartbeatAction, checkPresenceAction, markMessagesReadAction } from "@/features/messages/actions";
 import type { AdminChatThread } from "@/features/messages/queries";
 
 interface Message {
@@ -11,6 +11,7 @@ interface Message {
   clientId: string;
   senderRole: "CLIENT" | "ADMIN";
   messageText: string;
+  readAt?: Date | null;
   createdAt: Date;
 }
 
@@ -46,15 +47,21 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges, ad
   const [clientOnline, setClientOnline] = useState(false);
 
   useEffect(() => {
-    heartbeatAction(adminId);
-    const hb = setInterval(() => heartbeatAction(adminId), 20000);
+    const beat = () => {
+      if (document.visibilityState === "visible") heartbeatAction(adminId);
+    };
+    beat();
+    const hb = setInterval(beat, 20000);
     return () => clearInterval(hb);
   }, [adminId]);
 
   useEffect(() => {
     if (!selectedClientId) return;
+    markMessagesReadAction(selectedClientId);
     const check = async () => {
-      const online = await checkPresenceAction(selectedClientId);
+      if (document.visibilityState !== "visible") return;
+      const result = await checkPresenceAction(selectedClientId);
+      const online = result.success ? (result.data ?? false) : false;
       setClientOnline(online);
     };
     check();
@@ -78,6 +85,7 @@ export function MessagingDeskLive({ threads, allMessages, notificationBadges, ad
       clientId: selectedClientId,
       senderRole: "ADMIN",
       messageText: trimmed,
+      readAt: new Date(),
       createdAt: new Date(),
     };
 
