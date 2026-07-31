@@ -1,7 +1,7 @@
 # Zylora — Project Overview
 
 >A premium, whitelabel B2B client portal and automated analytics dashboard for digital marketing agencies.
-> Stack: Next.js 15 · React 19 · TypeScript · Drizzle ORM · Neon PostgreSQL · Tailwind v4 · ShadCN UI
+> Stack: Next.js 16 · React 19 · TypeScript · Drizzle ORM · Neon PostgreSQL · Tailwind v4 · ShadCN UI
 
 ---
 
@@ -28,7 +28,7 @@ Zylora consolidates this entire corporate B2B operational pipeline into a unifie
 ## Tech Stack
 
 |Layer|Choice|
-|Framework|Next.js 15 / React 19 (App Router, Server Actions ecosystem)|
+|Framework|Next.js 16 / React 19 (App Router, Server Actions ecosystem)|
 |Language|TypeScript|
 |Database|Neon PostgreSQL (Decoupled Serverless Cloud Stack)|
 |ORM|Drizzle ORM|
