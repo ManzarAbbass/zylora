@@ -1,14 +1,32 @@
-# Current Feature
+# Current Feature: Zylora Premium B2B Enterprise Homepage Mockup (Phase 3 Visual System)
 
-## Status: Complete
+## Status: In Progress
 
 ## Goals
 
-<!-- Add goals here -->
+- [ ] Build standalone semantic HTML5 mockup at `prototypes/zylora-landing/index.html` completely detached from the internal App Router.
+- [ ] Create sticky executive header nav with Zylora wordmark, anchor links (`Features`, `Enterprise Pricing`, `API docs`), gray `[Sign In]` button, and solid Royal Blue `[Request Access Demo]` button.
+- [ ] Build the 3-column core hero grid:
+  - Chaos Box (left) titled `"Your Advertising Ecosystem Today..."` with 8 scattered animated icon vector bubbles (Meta Ads, Google Sheets logs, Slack ping channels, Email servers, detached analytics tabs).
+  - Transformation Vector (center) — corporate blue pulsing arrow pointing left → right; rotates 90° pointing down below 768px.
+  - Order Matrix (right) titled `"...With Zylora Cloud"` — minimalist live dashboard layout preview with simulated graphs, tenant filter capsules, and mock approval status logs.
+- [ ] Build Enterprise Tier Pricing section with sliding `Monthly Billing` vs `Annual Commit $720/year` switch toggle and Pro corporate tier package table mapping B2B features matrix.
+- [ ] Write CSS animation framework at `prototypes/zylora-landing/styles.css` with clean native classes, `transition-all duration-300 ease-in-out` on interactive cards, and `html { scroll-behavior: smooth; }`.
+- [ ] Enforce fully fluid mobile-responsive layout stacking columns vertically below 768px without clipping text weights.
+- [ ] Write high-fidelity physics script at `prototypes/zylora-landing/script.js` using `requestAnimationFrame` for 60-FPS:
+  - Chaos vector collision engine — 8 icons float autonomously, bouncing off container walls.
+  - Mouse repulsion physics hook — `mousemove` applies inverse vector force pushing icons away from cursor.
+  - `IntersectionObserver` soft fade-up triggers on scroll into feature matrix blocks.
+- [ ] Guarantee zero runtime browser console exceptions and no memory leakage within infinite animation loops.
 
 ## Notes
 
-<!-- Add notes here -->
+- **Spec Source:** `context/features/zylora-landing-spec.md` (Status: ACTIVE).
+- **Target Files:** `prototypes/zylora-landing/index.html`, `prototypes/zylora-landing/styles.css`, `prototypes/zylora-landing/script.js`.
+- **Color Profile (Premium Corporate Light Slate):** canvas `#f8fafc`, cards `#ffffff`, Royal Blue `#2563eb`, Meta `#1877F2`, Google `#EA4335`, TikTok `#010101`, Email/Resend `#3B5FE0`, Custom Media `#ec4899`.
+- **Cross-reference tracks:** `@context/project-overview.md` (multi-tenant B2B enterprise alignment), `@context/zyloraUi/admin-dashboard.md` (Premium Light Slate theme match), `@context/coding-standards.md` (clean semantic structure, zero loose dependencies).
+- **Isolation Constraint:** 100% standalone inside `prototypes/zylora-landing/` — zero dependency leakage into the core App Router; pure vanilla frontend (no external libraries).
+- **Verification:** no console exceptions, no memory leaks in infinite `requestAnimationFrame` loops.
 
 ## History
 

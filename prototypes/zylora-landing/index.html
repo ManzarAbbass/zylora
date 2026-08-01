@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Zylora — consolidate every advertising channel into one unified corporate dashboard ledger." />
+  <title>Zylora — From Chaos to Order</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='4' width='18' height='16' rx='4' fill='%232563eb'/%3E%3Cpath d='M7 12h3.5l1.5-2.5L14 15l1.5-3H17' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#features">Skip to content</a>
+
+  <!-- ═══════════ Sticky Executive Header Nav ═══════════ -->
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="#top" aria-label="Zylora home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="16" rx="4" fill="#2563eb" />
+            <path d="M7 12h3.5l1.5-2.5L14 15l1.5-3H17" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="brand-name">Zylora</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#pricing">Enterprise Pricing</a>
+        <a href="#api">API docs</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-ghost" href="#signin">Sign In</a>
+        <a class="btn btn-primary" href="#request">Request Access Demo</a>
+      </div>
+
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div class="mobile-nav" id="mobile-nav" hidden>
+      <a href="#features">Features</a>
+      <a href="#pricing">Enterprise Pricing</a>
+      <a href="#api">API docs</a>
+      <div class="mobile-nav-actions">
+        <a class="btn btn-ghost" href="#signin">Sign In</a>
+        <a class="btn btn-primary" href="#request">Request Access Demo</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ═══════════ Core Visual Hero Section ═══════════ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy reveal">
+        <span class="eyebrow">B2B Omni-Channel Consolidation</span>
+        <h1 id="hero-title">From advertising chaos to a single, unified corporate ledger.</h1>
+        <p class="lead">
+          Zylora pulls Meta, Google, TikTok and email tracks out of scattered sheets and pings
+          into one typesafe dashboard your executives can actually trust.
+        </p>
+      </div>
+
+      <div class="hero-grid">
+        <!-- 1. Chaos Box (Left Canvas) -->
+        <article class="canvas-card chaos-card reveal">
+          <header class="canvas-header">
+            <h2>Your Advertising Ecosystem Today...</h2>
+            <span class="live-dot" aria-hidden="true"></span>
+          </header>
+          <div class="chaos-stage" id="chaos-stage" role="img" aria-label="Eight disconnected advertising channels linked by a live data mesh">
+            <canvas id="chaos-canvas" aria-hidden="true"></canvas>
+            <!-- Chaos metric nodes + alert logs injected by script.js -->
+          </div>
+          <p class="canvas-note">8 disconnected channels. No single source of truth.</p>
+        </article>
+
+        <!-- 2. Transformation Vector (Center Canvas) -->
+        <div class="transform-vector reveal" aria-hidden="true">
+          <div class="arrow-shaft">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="arrow-icon">
+              <path d="M3 12h16m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="pulse-ring"></div>
+        </div>
+
+        <!-- 3. Order Matrix (Right Canvas) -->
+        <article class="canvas-card order-card reveal">
+          <header class="canvas-header">
+            <h2>...With Zylora Cloud</h2>
+            <span class="status-pill">LIVE SYNC</span>
+          </header>
+
+          <div class="tenant-capsules" aria-label="Tenant filter capsules">
+            <button class="tenant-chip is-active" type="button">All Tenants</button>
+            <button class="tenant-chip" type="button">Ahmed Clothing</button>
+            <button class="tenant-chip" type="button">Northwind Coffee</button>
+            <button class="tenant-chip" type="button">Lumen Skincare</button>
+          </div>
+
+          <div class="matrix-stats">
+            <div class="matrix-stat">
+              <span class="matrix-stat-label">Attributed Revenue</span>
+              <strong class="matrix-stat-value">$602,170</strong>
+              <span class="delta up">▲ 18.4%</span>
+            </div>
+            <div class="matrix-stat">
+              <span class="matrix-stat-label">Ad Spend</span>
+              <strong class="matrix-stat-value">$214,890</strong>
+              <span class="delta up">▲ 6.2%</span>
+            </div>
+          </div>
+
+          <div class="matrix-chart" aria-label="Simulated revenue versus spend trend graph">
+            <svg viewBox="0 0 300 96" preserveAspectRatio="none" class="trend-chart">
+              <defs>
+                <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2563eb" stop-opacity="0.28" />
+                  <stop offset="100%" stop-color="#2563eb" stop-opacity="0.02" />
+                </linearGradient>
+              </defs>
+              <path class="grid-line" d="M0 24 H300 M0 48 H300 M0 72 H300" />
+              <path class="spend-line" d="M0 70 C 40 62, 80 66, 120 58 S 200 48, 240 50 S 280 44, 300 46" />
+              <path class="revenue-line" d="M0 56 C 40 48, 80 52, 120 40 S 200 26, 240 22 S 280 18, 300 12" />
+              <path class="revenue-fill" d="M0 56 C 40 48, 80 52, 120 40 S 200 26, 240 22 S 280 18, 300 12 V96 H0 Z" />
+            </svg>
+            <div class="chart-legend">
+              <span class="legend-item"><i class="swatch rev" aria-hidden="true"></i>Revenue</span>
+              <span class="legend-item"><i class="swatch spend" aria-hidden="true"></i>Spend</span>
+            </div>
+          </div>
+
+          <ol class="approval-log" aria-label="Mock approval status log">
+            <li class="log-row"><span class="log-name">Holiday Creative — Meta</span><span class="log-badge ok">APPROVED</span></li>
+            <li class="log-row"><span class="log-name">Spring Email Sequence</span><span class="log-badge warn">REVISION</span></li>
+            <li class="log-row"><span class="log-name">Search Campaign v2</span><span class="log-badge pending">PENDING</span></li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <!-- ═══════════ Features Section ═══════════ -->
+    <section class="features" id="features" aria-labelledby="features-title">
+      <div class="section-head reveal">
+        <h2 id="features-title">One dashboard. Every channel. Zero chaos.</h2>
+        <p>Inbound automation routes every ad network, sheet, and ping into a structured approval and reporting flow.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card reveal">
+          <span class="feature-icon meta" aria-hidden="true">📣</span>
+          <h3>Meta Ads Track</h3>
+          <p>Live spend, creative variants and delivery health streamed straight from the Meta API.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon google" aria-hidden="true">📊</span>
+          <h3>Google Ads Track</h3>
+          <p>Search and PMax campaigns normalized into the same revenue ledger as every other channel.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon tiktok" aria-hidden="true">🎬</span>
+          <h3>TikTok Marketing Track</h3>
+          <p>Creator and paid placements collapsed into one executive-grade performance curve.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon email" aria-hidden="true">✉️</span>
+          <h3>Direct Email / Resend</h3>
+          <p>Delivery logs, open rates and pipeline revenue tied directly to campaign records.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon custom" aria-hidden="true">🎨</span>
+          <h3>Custom Media Assets</h3>
+          <p>Approval queues for every visual deliverable before it ever touches a live channel.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-icon core" aria-hidden="true">🧭</span>
+          <h3>Unified Typesafe Ledger</h3>
+          <p>Strict typed schemas mean every dollar is traceable from chaos to the corporate boardroom.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ═══════════ Enterprise Tier Pricing Section ═══════════ -->
+    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+      <div class="section-head reveal">
+        <h2 id="pricing-title">Enterprise Pricing</h2>
+        <p>Transparent B2B licensing built for agencies and corporate marketing teams.</p>
+
+        <div class="billing-toggle" role="group" aria-label="Billing cycle switch">
+          <span class="billing-label is-active" id="label-monthly">Monthly Billing</span>
+          <button class="switch" id="billing-switch" type="button" role="switch" aria-checked="false" aria-labelledby="label-monthly label-annual">
+            <span class="switch-thumb" aria-hidden="true"></span>
+          </button>
+          <span class="billing-label" id="label-annual">Annual Commit <strong>$720/year</strong></span>
+        </div>
+      </div>
+
+      <div class="price-card reveal" id="api">
+        <header class="price-header">
+          <span class="tier-badge">PRO</span>
+          <h3>Zylora Cloud Pro</h3>
+          <p class="price-amount"><span class="price-value" id="price-value">$89</span><span class="price-period" id="price-period">/month</span></p>
+          <p class="price-tagline">The full consolidation suite for growth-stage agencies and brands.</p>
+        </header>
+
+        <ul class="price-features">
+          <li>Unlimited campaign channels (Meta · Google · TikTok · Email)</li>
+          <li>Typesafe unified revenue &amp; spend ledger</li>
+          <li>Creative asset approval workflow engine</li>
+          <li>Tenant-scoped multi-client workspaces</li>
+          <li>Executive reporting with live CSV export</li>
+          <li>White-label portal &amp; custom brand domains</li>
+          <li>Priority support &amp; dedicated migration engineer</li>
+          <li>99.9% uptime SLA with audit trail</li>
+        </ul>
+
+        <button class="btn btn-primary btn-block" type="button">Request Access Demo</button>
+      </div>
+    </section>
+
+    <!-- ═══════════ API Docs Teaser ═══════════ -->
+    <section class="api" id="api-docs" aria-labelledby="api-title">
+      <div class="api-inner reveal">
+        <h2 id="api-title">A typesafe REST + webhook API for your stack.</h2>
+        <p>Push and pull campaign events with strict schemas and signed webhooks — no spaghetti integrations.</p>
+        <a class="btn btn-primary" href="#request">Read the API docs</a>
+      </div>
+    </section>
+
+    <footer class="site-footer" id="request">
+      <div class="footer-inner">
+        <p class="footer-brand">Zylora</p>
+        <p>Premium white-label B2B client portal and automated analytics dashboard.</p>
+        <a class="btn btn-primary" href="#request">Request Access Demo</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
