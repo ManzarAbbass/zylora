@@ -1,32 +1,14 @@
-# Current Feature: Zylora Premium B2B Enterprise Homepage Mockup (Phase 3 Visual System)
+# Current Feature
 
-## Status: In Progress
+## Status: Complete
 
 ## Goals
 
-- [ ] Build standalone semantic HTML5 mockup at `prototypes/zylora-landing/index.html` completely detached from the internal App Router.
-- [ ] Create sticky executive header nav with Zylora wordmark, anchor links (`Features`, `Enterprise Pricing`, `API docs`), gray `[Sign In]` button, and solid Royal Blue `[Request Access Demo]` button.
-- [ ] Build the 3-column core hero grid:
-  - Chaos Box (left) titled `"Your Advertising Ecosystem Today..."` with 8 scattered animated icon vector bubbles (Meta Ads, Google Sheets logs, Slack ping channels, Email servers, detached analytics tabs).
-  - Transformation Vector (center) — corporate blue pulsing arrow pointing left → right; rotates 90° pointing down below 768px.
-  - Order Matrix (right) titled `"...With Zylora Cloud"` — minimalist live dashboard layout preview with simulated graphs, tenant filter capsules, and mock approval status logs.
-- [ ] Build Enterprise Tier Pricing section with sliding `Monthly Billing` vs `Annual Commit $720/year` switch toggle and Pro corporate tier package table mapping B2B features matrix.
-- [ ] Write CSS animation framework at `prototypes/zylora-landing/styles.css` with clean native classes, `transition-all duration-300 ease-in-out` on interactive cards, and `html { scroll-behavior: smooth; }`.
-- [ ] Enforce fully fluid mobile-responsive layout stacking columns vertically below 768px without clipping text weights.
-- [ ] Write high-fidelity physics script at `prototypes/zylora-landing/script.js` using `requestAnimationFrame` for 60-FPS:
-  - Chaos vector collision engine — 8 icons float autonomously, bouncing off container walls.
-  - Mouse repulsion physics hook — `mousemove` applies inverse vector force pushing icons away from cursor.
-  - `IntersectionObserver` soft fade-up triggers on scroll into feature matrix blocks.
-- [ ] Guarantee zero runtime browser console exceptions and no memory leakage within infinite animation loops.
+<!-- Add goals here -->
 
 ## Notes
 
-- **Spec Source:** `context/features/zylora-landing-spec.md` (Status: ACTIVE).
-- **Target Files:** `prototypes/zylora-landing/index.html`, `prototypes/zylora-landing/styles.css`, `prototypes/zylora-landing/script.js`.
-- **Color Profile (Premium Corporate Light Slate):** canvas `#f8fafc`, cards `#ffffff`, Royal Blue `#2563eb`, Meta `#1877F2`, Google `#EA4335`, TikTok `#010101`, Email/Resend `#3B5FE0`, Custom Media `#ec4899`.
-- **Cross-reference tracks:** `@context/project-overview.md` (multi-tenant B2B enterprise alignment), `@context/zyloraUi/admin-dashboard.md` (Premium Light Slate theme match), `@context/coding-standards.md` (clean semantic structure, zero loose dependencies).
-- **Isolation Constraint:** 100% standalone inside `prototypes/zylora-landing/` — zero dependency leakage into the core App Router; pure vanilla frontend (no external libraries).
-- **Verification:** no console exceptions, no memory leaks in infinite `requestAnimationFrame` loops.
+<!-- Add notes here -->
 
 ## History
 
@@ -85,3 +67,5 @@
 - **2026-07-30** — Auth Security Fixes — AUTH_SECURITY_REVIEW Remediation implemented on `feature/auth-security-fixes-auth-security-review-remediation`. Added rate limiting to `changePasswordAction` (3/15min) and `executePasswordResetAction` (10/1hr) via Upstash Redis sliding window limiters. Implemented two-legged password reset flow: SHA-256 hashed codes in DB with one-time `?code=` URL param instead of raw token, `referrer=no-referrer` meta tag. Replaced hardcoded `"ahmed@clothing.com"` in client layout with `session.user.email`. Added role assertion (`ADMIN`/`CLIENT`) + `notFound()` guards in both admin and client layouts. Created shared `passwordSchema` in `src/lib/password.ts` — enforces uppercase, lowercase, digit, and special character with Zod validation on all password mutations. Created `audit_logs` table + `logAuditEvent()` utility; audit trail on every password change. Added `failedAttempts`/`lockedUntil` columns to users table; 5 failed attempts triggers 15-minute account lockout in `authorize()`. Normalized forgot-password response timing with 1s delay on early-return path. Added clear error on missing `RESEND_API_KEY`. Added `autoComplete`, `required`, `minLength` HTML attributes to settings password inputs. Build passes cleanly — zero TypeScript errors. Per `docs/audit-results/AUTH_SECURITY_REVIEW.md`.
 
 - **2026-08-01** — Full-Spectrum Codebase Security & Performance Hardening Audit implemented on `main`. Ran the automated codebase scanner per `.opencode/agents/code-scanner.md` and remediated every triage level (Critical 2, High 4, Medium 8, Low 8) across the portal. **Critical:** gated `onboardNewClientAction` (ADMIN-only + Zod schema, blocks anonymous admin forgery) and all three approvals mutations (`approveAssetAction`/`rejectAssetAction` via `canMutateAsset` tenant-ownership proof, `resubmitRevisedAssetAction` ADMIN-only) in `src/features/clients/actions.ts` and `src/features/approvals/actions.ts`. **High:** added role/ownership gates to `sendAdminMessageAction`/`sendClientMessageAction`, ADMIN gate to `exportCsvReportAction`, replaced hardcoded `ahmed@clothing.com` in client dashboard with authenticated `session.user.id`, and relocated the login rate limiter into the Credentials `authorize()` callback in `src/auth.ts` (removed misleading pre-call `loginAction`). **Medium:** rewrote `getAdminChatThreads` N+1 correlated subqueries into a single `selectDistinctOn` CTE join, added per-client message limits via window-function CTE, fixed topbar search stale-response race with cancellation flag, parallelized admin/client stats with `Promise.all`, added CSV formula-injection escaping, and normalized all Server Action returns to the `{ success, data?, error? }` contract. **Low:** deleted dead `src/lib/mock-data.ts`, extracted shared `SearchResultsList` component (de-duplicated ~130 lines in topbar), widened proxy matcher to `/settings` + `/profile`, added `read_at` column to `messages` (migration `0007_unread-message-read-receipt` applied to development branch) with unread badge queries + `markMessagesReadAction` + chat visibility-gated polling, cleared lockout state on password reset, tightened OAuth account type to `AdapterAccount["type"]`, and replaced sidebar communications count badges with an unread dot indicator. Production branch untouched; `npx tsc --noEmit` and ESLint clean. Typecheck clean, build passes.
+
+- **2026-08-02** — Zylora Premium B2B Enterprise Homepage Mockup (Phase 3 Visual System) implemented on `feature/zylora-landing-mockup-phase-3-visual-system`. Standalone interactive marketing homepage in `prototypes/zylora-landing/` (index.html + styles.css + script.js), 100% isolated from the core App Router with zero dependency leakage. Sticky executive header (Zylora wordmark, anchor links, Sign In, Request Access Demo) with mobile hamburger menu and hidden CTA on mobile. 3-column hero: chaos stage / pulsing transformation vector (rotates 90° on mobile) / order matrix (tenant capsules, revenue vs spend chart, approval log). Enterprise pricing with Monthly vs Annual $720/yr billing toggle. Chaos engine: 8 floating raw-data metric nodes (Meta ROAS 4.2x, Google CPM, TikTok CPA, Email OR) with live value jitter, dynamic breaking mesh network canvas links, inverse mouse repulsion, auto-spawning alert log pills with fade-out DOM cleanup, DPR-aware rendering. IntersectionObserver scroll reveal. Fully responsive breakpoints (1024px tablet, 768px mobile, 420px small phone). Verified zero runtime console errors and zero memory leaks in the 60-FPS rAF loop. Built per `context/features/zylora-landing-spec.md`.
