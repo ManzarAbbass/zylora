@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { Search, Bell, Menu, X } from "lucide-react";
+import { Search, Bell, Menu, X, Kanban } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { universalSearchAction } from "@/features/search/actions";
 import { SearchResultsList } from "@/components/search-results-list";
@@ -65,9 +65,12 @@ export function AdminTopbar({ onMenuToggle, role = "ADMIN" }: AdminTopbarProps) 
 
   return (
     <header className="flex items-center gap-4 border-b border-white/10 bg-zylora-blue px-4 py-3 sm:gap-6 sm:px-6 lg:border-slate-200 lg:bg-zylora-canvas">
-      <span className="text-sm font-bold tracking-wide text-white lg:hidden">
-        Zylora
-      </span>
+      <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-white/20 bg-white/10">
+          <Kanban className="size-4 text-white" />
+        </div>
+        <span className="text-sm font-bold tracking-wide text-white">Zylora</span>
+      </div>
 
       <div className="min-w-0">
         <p className="hidden text-[10px] font-semibold uppercase tracking-widest text-white/50 lg:block lg:text-slate-400">
