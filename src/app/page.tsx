@@ -111,7 +111,7 @@ export default async function Home() {
 
   return (
     <AccessRequestProvider>
-      <div className="min-h-screen bg-zylora-blue">
+      <div className="min-h-screen bg-zylora-canvas">
         <SiteHeader variant="navy" />
 
         <main id="top">
@@ -119,16 +119,16 @@ export default async function Home() {
         <section className="mx-auto max-w-[1200px] px-6 pb-6 pt-16 lg:pt-20" aria-labelledby="hero-title">
           <Reveal>
             <div className="mx-auto mb-12 max-w-[720px] text-center">
-              <span className="mb-4 inline-block rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-blue-100">
+              <span className="mb-4 inline-block rounded-full bg-[#3B5FE0]/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[#3B5FE0]">
                 B2B Omni-Channel Consolidation
               </span>
               <h1
                 id="hero-title"
-                className="text-3xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[52px]"
+                className="text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl lg:text-[52px]"
               >
                 From advertising chaos to a single, unified corporate ledger.
               </h1>
-              <p className="mx-auto mt-4 max-w-[620px] text-lg text-blue-100/70">
+              <p className="mx-auto mt-4 max-w-[620px] text-lg text-slate-500">
                 Zylora pulls Meta, Google, TikTok and email tracks out of scattered sheets and
                 pings into one typesafe dashboard your executives can actually trust.
               </p>
@@ -165,10 +165,10 @@ export default async function Home() {
         <section id="features" className="mx-auto max-w-[1200px] px-6 py-20 lg:py-24" aria-labelledby="features-title">
           <Reveal>
             <div className="mx-auto mb-12 max-w-[680px] text-center">
-              <h2 id="features-title" className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+              <h2 id="features-title" className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
                 One dashboard. Every channel. Zero chaos.
               </h2>
-              <p className="mt-3.5 text-base text-blue-100/70">
+              <p className="mt-3.5 text-base text-slate-500">
                 Inbound automation routes every ad network, sheet, and ping into a structured
                 approval and reporting flow.
               </p>
@@ -203,11 +203,11 @@ export default async function Home() {
         {/* API Docs Teaser */}
         <section id="api" className="mx-auto max-w-[1200px] px-6 py-12 lg:py-16" aria-labelledby="api-title">
           <Reveal>
-            <div className="rounded-[20px] border border-white/10 bg-white/5 px-6 py-14 text-center sm:px-10">
-              <h2 id="api-title" className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+            <div className="rounded-[20px] border border-slate-200 bg-white px-6 py-14 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.06)] sm:px-10">
+              <h2 id="api-title" className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
                 A typesafe REST + webhook API for your stack.
               </h2>
-              <p className="mx-auto mt-3 max-w-[520px] text-base text-blue-100/70">
+              <p className="mx-auto mt-3 max-w-[520px] text-base text-slate-500">
                 Push and pull campaign events with strict schemas and signed webhooks — no
                 spaghetti integrations.
               </p>
@@ -218,9 +218,9 @@ export default async function Home() {
 
         {/* Footer */}
         <footer className="mx-auto max-w-[1200px] px-6 pb-14 pt-10 text-center">
-          <div className="border-t border-white/10 pt-10">
-            <p className="text-xl font-extrabold tracking-tight text-white">Zylora</p>
-            <p className="mx-auto mt-1.5 max-w-[560px] text-sm text-blue-100/70">
+          <div className="border-t border-slate-200 pt-10">
+            <p className="text-xl font-extrabold tracking-tight text-slate-900">Zylora</p>
+            <p className="mx-auto mt-1.5 max-w-[560px] text-sm text-slate-500">
               Premium white-label B2B client portal and automated analytics dashboard.
             </p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -232,7 +232,7 @@ export default async function Home() {
                 Sign In
               </a>
             </div>
-            <p className="mt-8 text-xs text-white/50">
+            <p className="mt-8 text-xs text-slate-400">
               &copy; {new Date().getFullYear()} Zylora. All rights reserved.
             </p>
           </div>

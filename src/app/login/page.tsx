@@ -54,12 +54,12 @@ export default function LoginPage() {
 
   return (
     <AccessRequestProvider>
-      <div className="flex min-h-screen flex-col bg-zylora-blue">
+      <div className="flex min-h-screen flex-col bg-zylora-canvas">
         <SiteHeader variant="navy" />
 
         <main className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
           <div className="w-full max-w-md">
-            <div className="rounded-xl border border-slate-100 bg-white p-8 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
+            <div className="rounded-xl border border-slate-100 bg-white p-8 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.06)]">
               <div className="mb-8 text-center">
                 <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-lg border border-white/20 bg-[#124768] shadow-[0_6px_16px_rgba(18,71,104,0.35)]">
                   <Kanban className="size-6 text-white" />
@@ -149,7 +149,7 @@ export default function LoginPage() {
               </form>
             </div>
 
-            <p className="mt-6 text-center text-xs text-white/50">
+            <p className="mt-6 text-center text-xs text-slate-400">
               &copy; {new Date().getFullYear()} Zylora. All rights reserved.
             </p>
           </div>

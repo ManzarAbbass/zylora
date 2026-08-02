@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Kanban } from "lucide-react";
 import { AccessRequestTrigger } from "@/components/landing/access-request-dialog";
 import { cn } from "@/lib/utils";
 
@@ -10,21 +11,6 @@ const navLinks = [
   { label: "Enterprise Pricing", href: "#pricing" },
   { label: "API docs", href: "#api" },
 ];
-
-export function BrandMark({ className = "size-7" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <rect x="3" y="4" width="18" height="16" rx="4" fill="#2563eb" />
-      <path
-        d="M7 12h3.5l1.5-2.5L14 15l1.5-3H17"
-        stroke="#ffffff"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 interface SiteHeaderProps {
   variant?: "light" | "navy";
@@ -50,19 +36,25 @@ export function SiteHeader({ variant = "light" }: SiteHeaderProps) {
       )}
     >
       <div className="mx-auto flex max-w-[1200px] items-center gap-6 px-6 py-3.5">
-        <a
+        <Link
           className={cn(
             "flex items-center gap-2.5 text-xl font-extrabold tracking-tight",
             navy ? "text-white" : "text-slate-900",
           )}
-          href="#top"
+          href="/"
           aria-label="Zylora home"
         >
-          <span aria-hidden="true">
-            <BrandMark />
+          <span
+            aria-hidden="true"
+            className={cn(
+              "flex size-8 items-center justify-center rounded-lg border",
+              navy ? "border-white/20 bg-white/10" : "border-slate-200 bg-white",
+            )}
+          >
+            <Kanban className={cn("size-5", navy ? "text-white" : "text-[#2563eb]")} />
           </span>
           <span>Zylora</span>
-        </a>
+        </Link>
 
         <nav className="ml-6 hidden flex-1 items-center gap-7 md:flex" aria-label="Primary">
           {navLinks.map((link) => (
