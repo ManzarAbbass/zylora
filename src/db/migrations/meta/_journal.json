@@ -57,6 +57,13 @@
       "when": 1785541305152,
       "tag": "0007_unread-message-read-receipt",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785628701957,
+      "tag": "0008_free_shocker",
+      "breakpoints": true
     }
   ]
 }

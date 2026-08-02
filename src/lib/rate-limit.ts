@@ -36,3 +36,11 @@ export const resetExecutionRateLimiter = redis
       prefix: "@zylora/reset-execution-shield",
     })
   : null;
+
+export const accessRequestRateLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "3600 s"),
+      prefix: "@zylora/access-request-shield",
+    })
+  : null;

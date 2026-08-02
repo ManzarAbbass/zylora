@@ -116,6 +116,19 @@ export const auditLogs = pgTable("audit_logs", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const accessRequests = pgTable("access_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  workEmail: text("work_email").notNull(),
+  companyName: text("company_name").notNull(),
+  role: text("role"),
+  monthlyAdSpend: text("monthly_ad_spend"),
+  message: text("message"),
+  ip: text("ip"),
+  status: text("status").default("PENDING").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export const messages = pgTable("messages", {
   id: uuid("id").defaultRandom().primaryKey(),
   clientId: uuid("client_id")
