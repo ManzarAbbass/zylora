@@ -75,7 +75,7 @@ function TransformVector() {
           style={{ animation: "ringExpand 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
         />
         <div
-          className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-[#2563eb] to-[#4f46e5] text-white shadow-[0_10px_28px_rgba(37,99,235,0.42)] lg:size-16"
+          className="relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-zylora-blue to-[#0d3a54] text-white shadow-[0_10px_28px_rgba(18,71,104,0.45)] lg:size-16"
           style={{ animation: "arrowPulse 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite" }}
         >
           <svg
@@ -211,7 +211,7 @@ export default async function Home() {
                 Push and pull campaign events with strict schemas and signed webhooks — no
                 spaghetti integrations.
               </p>
-              <AccessRequestTrigger className="mt-6" />
+              <AccessRequestTrigger className="mt-6 bg-zylora-blue hover:bg-[#0d3a54]" />
             </div>
           </Reveal>
         </section>
@@ -224,7 +224,7 @@ export default async function Home() {
               Premium white-label B2B client portal and automated analytics dashboard.
             </p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <AccessRequestTrigger />
+              <AccessRequestTrigger className="bg-zylora-blue hover:bg-[#0d3a54]" />
               <a
                 href="/login"
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-lg border border-slate-200 bg-[#f1f5f9] px-5 py-2.5 text-sm font-semibold text-slate-900 transition-all duration-300 hover:bg-slate-200"

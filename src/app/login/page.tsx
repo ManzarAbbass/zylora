@@ -141,7 +141,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#3B5FE0] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2A4CC7] focus:outline-none focus:ring-2 focus:ring-[#3B5FE0] focus:ring-offset-2 disabled:opacity-60"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-zylora-blue px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0d3a54] focus:outline-none focus:ring-2 focus:ring-zylora-blue focus:ring-offset-2 disabled:opacity-60"
                 >
                   {loading && <Loader2 className="size-4 animate-spin" />}
                   {loading ? "Authenticating..." : "Authenticate Credentials"}

@@ -105,7 +105,7 @@ export function PricingSection() {
               onClick={() => setAnnual((value) => !value)}
               className={cn(
                 "relative h-7 w-[52px] rounded-full border transition-colors duration-300",
-                annual ? "border-[#2563eb] bg-[#2563eb]" : "border-slate-200 bg-slate-200",
+                annual ? "border-zylora-blue bg-zylora-blue" : "border-slate-200 bg-slate-200",
               )}
             >
               <span
@@ -121,7 +121,7 @@ export function PricingSection() {
                 annual ? "text-slate-900" : "text-slate-400",
               )}
             >
-              Annual Commit <strong className="text-[#2563eb]">save up to 20%</strong>
+              Annual Commit <strong className="text-zylora-blue">save up to 20%</strong>
             </span>
           </div>
         </div>
@@ -134,12 +134,12 @@ export function PricingSection() {
               className={cn(
                 "flex h-full flex-col rounded-[20px] border bg-white p-7 text-left shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.06)] transition-all duration-300",
                 plan.featured
-                  ? "relative border-[#2563eb]/40 shadow-[0_2px_4px_rgba(15,23,42,0.05),0_20px_48px_rgba(37,99,235,0.14)]"
+                  ? "relative border-zylora-blue/40 shadow-[0_2px_4px_rgba(15,23,42,0.05),0_20px_48px_rgba(18,71,104,0.16)]"
                   : "border-slate-100",
               )}
             >
               {plan.featured && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#2563eb] px-3.5 py-1 text-[11px] font-extrabold tracking-[0.08em] text-white shadow">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-zylora-blue px-3.5 py-1 text-[11px] font-extrabold tracking-[0.08em] text-white shadow">
                   {plan.badge}
                 </span>
               )}
@@ -147,7 +147,7 @@ export function PricingSection() {
               <span
                 className={cn(
                   "mb-2.5 inline-block w-fit rounded-full px-3 py-1 text-[10px] font-extrabold tracking-[0.14em]",
-                  plan.featured ? "bg-[#2563eb]/10 text-[#2563eb]" : "bg-slate-100 text-slate-500",
+                  plan.featured ? "bg-zylora-blue/10 text-zylora-blue" : "bg-slate-100 text-slate-500",
                 )}
               >
                 {plan.badge}
@@ -166,8 +166,16 @@ export function PricingSection() {
               <ul className="mt-6 flex flex-1 flex-col gap-3 border-t border-slate-100 pt-6">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3 text-sm font-medium text-slate-700">
-                    <span className="mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#2563eb]/10">
-                      <Check className="size-3 text-[#2563eb]" strokeWidth={3} />
+                                        <span
+                      className={cn(
+                        "mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-full",
+                        plan.featured ? "bg-zylora-blue/10" : "bg-[#2563eb]/10",
+                      )}
+                    >
+                      <Check
+                        className={cn("size-3", plan.featured ? "text-zylora-blue" : "text-[#2563eb]")}
+                        strokeWidth={3}
+                      />
                     </span>
                     {feature}
                   </li>
@@ -177,7 +185,12 @@ export function PricingSection() {
               <AccessRequestTrigger
                 size="block"
                 variant={plan.featured ? "default" : "outline"}
-                className="mt-6"
+                className={cn(
+                  "mt-6",
+                  plan.featured
+                    ? "bg-zylora-blue hover:bg-[#0d3a54]"
+                    : "hover:bg-zylora-blue",
+                )}
               >
                 {plan.ctaLabel}
               </AccessRequestTrigger>

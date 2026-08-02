@@ -231,7 +231,12 @@ function AccessRequestDialog({ open, onOpenChange }: AccessRequestDialogProps) {
             </p>
           </div>
 
-          <Button type="submit" size="block" disabled={submitting}>
+          <Button
+            type="submit"
+            size="block"
+            disabled={submitting}
+            className="bg-zylora-blue hover:bg-[#0d3a54]"
+          >
             {submitting && <Loader2 className="size-4 animate-spin" />}
             {submitting ? "Submitting Request..." : "Submit Access Request"}
           </Button>

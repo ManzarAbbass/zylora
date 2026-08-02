@@ -83,7 +83,15 @@ export function SiteHeader({ variant = "light" }: SiteHeaderProps) {
           >
             Sign In
           </Link>
-          <AccessRequestTrigger size="sm" className="px-5 py-2.5" />
+          <AccessRequestTrigger
+            size="sm"
+            className={cn(
+              "px-5 py-2.5",
+              navy
+                ? "border border-white/25 bg-white text-slate-900 shadow-none hover:bg-slate-100"
+                : "",
+            )}
+          />
         </div>
 
         <button
@@ -162,7 +170,13 @@ export function SiteHeader({ variant = "light" }: SiteHeaderProps) {
           >
             Sign In
           </Link>
-          <AccessRequestTrigger size="block" onClick={() => setMenuOpen(false)} />
+          <AccessRequestTrigger
+            size="block"
+            onClick={() => setMenuOpen(false)}
+            className={cn(
+              navy ? "border border-white/25 bg-white text-slate-900 hover:bg-slate-100" : "",
+            )}
+          />
         </div>
       </div>
     </header>
