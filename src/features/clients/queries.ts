@@ -49,35 +49,66 @@ export interface ExecutiveReport {
   id: string;
   companyName: string | null;
   totalCampaigns: number;
+  channels: string[];
   totalSpend: string;
   totalRevenue: string;
   netRoi: string;
 }
 
 export async function getAdminExecutiveReports(): Promise<ExecutiveReport[]> {
+  const campaignAgg = db
+    .select({
+      clientId: campaigns.clientId,
+      totalCampaigns: sql<number>`cast(count(distinct ${campaigns.id}) as int)`.as("totalCampaigns"),
+      channels: sql<string[]>`coalesce(array_agg(distinct ${campaigns.channel}::text), array[]::text[])`.as("channels"),
+      totalRevenue: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`.as("totalRevenue"),
+    })
+    .from(campaigns)
+    .groupBy(campaigns.clientId)
+    .as("campaign_agg");
+
+  const spendAgg = db
+    .select({
+      clientId: monthlyTrends.clientId,
+      totalSpend: sql<string>`coalesce(cast(sum(${monthlyTrends.spend}) as varchar), '0')`.as("totalSpend"),
+    })
+    .from(monthlyTrends)
+    .groupBy(monthlyTrends.clientId)
+    .as("spend_agg");
+
   const rows = await db
     .select({
       id: users.id,
       companyName: users.companyName,
-      totalCampaigns: sql<number>`cast(count(distinct ${campaigns.id}) as int)`,
-      totalSpend: sql<string>`coalesce(cast(sum(${monthlyTrends.spend}) as varchar), '0')`,
-      totalRevenue: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
+      totalCampaigns: campaignAgg.totalCampaigns,
+      channels: campaignAgg.channels,
+      totalSpend: spendAgg.totalSpend,
+      totalRevenue: campaignAgg.totalRevenue,
     })
     .from(users)
-    .innerJoin(campaigns, eq(users.id, campaigns.clientId))
-    .leftJoin(monthlyTrends, eq(users.id, monthlyTrends.clientId))
-    .where(eq(users.role, "CLIENT"))
-    .groupBy(users.id);
+    .innerJoin(campaignAgg, eq(users.id, campaignAgg.clientId))
+    .leftJoin(spendAgg, eq(users.id, spendAgg.clientId))
+    .where(eq(users.role, "CLIENT"));
 
-  return rows.map((r) => ({
+  const data = rows as unknown as Array<{
+    id: string;
+    companyName: string | null;
+    totalCampaigns: number;
+    channels: string[];
+    totalSpend: string;
+    totalRevenue: string;
+  }>;
+
+  return data.map((r) => ({
     ...r,
-    netRoi: (parseFloat(r.totalRevenue) - parseFloat(r.totalSpend)).toFixed(2),
+    channels: (r.channels ?? []).filter(Boolean),
+    totalSpend: r.totalSpend ?? "0",
+    netRoi: (parseFloat(r.totalRevenue) - parseFloat(r.totalSpend ?? "0")).toFixed(2),
   }));
-}
-
-export interface ClientCampaignRow {
+}export interface ClientCampaignRow {
   id: string;
   title: string;
+  channel: string;
   emailsSent: number;
   openRate: string;
   revenueGenerated: string;
@@ -99,6 +130,7 @@ export async function getClientExecutiveReportsData(clientId: string): Promise<C
     .select({
       id: campaigns.id,
       title: campaigns.title,
+      channel: campaigns.channel,
       emailsSent: campaigns.emailsSent,
       openRate: campaigns.openRate,
       revenueGenerated: campaigns.revenueGenerated,

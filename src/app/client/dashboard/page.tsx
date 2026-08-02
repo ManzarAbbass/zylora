@@ -5,6 +5,13 @@ import { StatCard } from "@/components/stat-card";
 import { RevenueChart } from "@/components/revenue-chart";
 import { getCampaignsByClientId, getClientWorkspaceStats, getClientMonthlyTrends } from "@/features/campaigns/queries";
 
+const channelStyles: Record<string, { label: string; classes: string }> = {
+  EMAIL: { label: "Email", classes: "bg-[#3b5fe0]/10 text-[#3b5fe0]" },
+  META: { label: "Meta Ads", classes: "bg-[#1877f2]/10 text-[#1877f2]" },
+  GOOGLE: { label: "Google Ads", classes: "bg-[#ea4335]/10 text-[#ea4335]" },
+  TIKTOK: { label: "TikTok", classes: "bg-slate-900/5 text-slate-900" },
+};
+
 export default async function ClientDashboardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
@@ -68,7 +75,15 @@ export default async function ClientDashboardPage() {
                 className="group rounded-xl border border-slate-100 bg-white shadow-sm transition hover:shadow-md hover:border-slate-200"
               >
                 <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-4 py-3 sm:px-5 sm:py-4">
-                  <h3 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{campaign.title}</h3>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span
+                      className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${channelStyles[campaign.channel]?.classes ?? "bg-slate-100 text-slate-600"}`}
+                      title={`Source: ${channelStyles[campaign.channel]?.label ?? campaign.channel}`}
+                    >
+                      {channelStyles[campaign.channel]?.label ?? campaign.channel}
+                    </span>
+                    <h3 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{campaign.title}</h3>
+                  </div>
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
                       campaign.status === "ACTIVE"

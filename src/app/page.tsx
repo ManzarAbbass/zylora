@@ -21,44 +21,44 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Zylora — From Chaos to Order",
   description:
-    "Zylora pulls Meta, Google, TikTok and email tracks out of scattered sheets and pings into one typesafe dashboard your executives can actually trust.",
+    "Zylora brings your campaigns, approvals, financial reports and agency conversations into one secure dashboard your executives can actually trust.",
 };
 
 const features = [
   {
     icon: Megaphone,
-    title: "Meta Ads Track",
-    copy: "Live spend, creative variants and delivery health streamed straight from the Meta API.",
-    chip: "bg-[#1877f2]/10 text-[#1877f2]",
+    title: "Campaign Analytics Dashboard",
+    copy: "Live campaign revenue, spend, open rates and delivery health in one executive view.",
+    chip: "bg-[#2563eb]/10 text-[#2563eb]",
   },
   {
     icon: BarChart3,
-    title: "Google Ads Track",
-    copy: "Search and PMax campaigns normalized into the same revenue ledger as every other channel.",
+    title: "Performance Reporting",
+    copy: "Revenue vs spend trends and campaign grids rendered straight from your live records.",
     chip: "bg-[#ea4335]/10 text-[#ea4335]",
   },
   {
     icon: Clapperboard,
-    title: "TikTok Marketing Track",
-    copy: "Creator and paid placements collapsed into one executive-grade performance curve.",
+    title: "Business Performance Ledger",
+    copy: "Investment, attributed revenue and net profit margin in one clean financial view.",
     chip: "bg-slate-900/5 text-slate-900",
   },
   {
     icon: Mail,
-    title: "Direct Email / Resend",
-    copy: "Delivery logs, open rates and pipeline revenue tied directly to campaign records.",
+    title: "Direct Agency Messaging",
+    copy: "Real-time chat with your agency desk for feedback, approvals and day-to-day operations.",
     chip: "bg-[#3b5fe0]/10 text-[#3b5fe0]",
   },
   {
     icon: Palette,
-    title: "Custom Media Assets",
-    copy: "Approval queues for every visual deliverable before it ever touches a live channel.",
+    title: "Creative Asset Approvals",
+    copy: "Review, approve or request revisions on every visual deliverable before it launches.",
     chip: "bg-pink-500/10 text-pink-500",
   },
   {
     icon: ShieldCheck,
-    title: "Unified Typesafe Ledger",
-    copy: "Strict typed schemas mean every dollar is traceable from chaos to the corporate boardroom.",
+    title: "Tenant-Scoped Security",
+    copy: "Strict role isolation and password protection — your company only ever sees its own data.",
     chip: "bg-[#3B5FE0]/10 text-[#3B5FE0]",
   },
 ];
@@ -129,8 +129,8 @@ export default async function Home() {
                 From advertising chaos to a single, unified corporate ledger.
               </h1>
               <p className="mx-auto mt-4 max-w-[620px] text-lg text-slate-500">
-                Zylora pulls Meta, Google, TikTok and email tracks out of scattered sheets and
-                pings into one typesafe dashboard your executives can actually trust.
+                Zylora brings your campaigns, approvals, financial reports and agency
+                conversations into one secure dashboard your executives can actually trust.
               </p>
             </div>
           </Reveal>
@@ -166,11 +166,11 @@ export default async function Home() {
           <Reveal>
             <div className="mx-auto mb-12 max-w-[680px] text-center">
               <h2 id="features-title" className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                One dashboard. Every channel. Zero chaos.
+                One dashboard. Every campaign. Zero chaos.
               </h2>
               <p className="mt-3.5 text-base text-slate-500">
-                Inbound automation routes every ad network, sheet, and ping into a structured
-                approval and reporting flow.
+                Your campaigns, asset approvals, financial reports and agency conversations in
+                a structured, role-scoped workflow.
               </p>
             </div>
           </Reveal>
@@ -205,11 +205,11 @@ export default async function Home() {
           <Reveal>
             <div className="rounded-[20px] border border-slate-200 bg-white px-6 py-14 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.06)] sm:px-10">
               <h2 id="api-title" className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-                A typesafe REST + webhook API for your stack.
+                A secure, role-scoped portal for your team.
               </h2>
               <p className="mx-auto mt-3 max-w-[520px] text-base text-slate-500">
-                Push and pull campaign events with strict schemas and signed webhooks — no
-                spaghetti integrations.
+                Every login is gated behind role-based access and tenant isolation — the data
+                your executives see is exactly the data they should see.
               </p>
               <AccessRequestTrigger className="mt-6 bg-zylora-blue hover:bg-[#0d3a54]" />
             </div>

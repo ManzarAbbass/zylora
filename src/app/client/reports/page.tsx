@@ -70,6 +70,9 @@ export default async function ClientReportsPage() {
                 Campaign Title
               </th>
               <th className="whitespace-nowrap px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Source
+              </th>
+              <th className="whitespace-nowrap px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Emails Sent
               </th>
               <th className="whitespace-nowrap px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -86,7 +89,7 @@ export default async function ClientReportsPage() {
           <tbody className="divide-y divide-slate-100">
             {campaigns.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-400">
+                <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-400">
                   No active campaigns found. Start a campaign to see performance metrics here.
                 </td>
               </tr>
@@ -94,6 +97,11 @@ export default async function ClientReportsPage() {
               campaigns.map((c) => (
                 <tr key={c.id} className="transition hover:bg-slate-50/50">
                   <td className="px-6 py-4 font-medium text-slate-900">{c.title}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                      {c.channel}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-slate-600">
                     {c.emailsSent.toLocaleString("en-US")}
                   </td>

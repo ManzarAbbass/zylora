@@ -97,10 +97,11 @@ export async function exportCsvReportAction() {
   try {
     const reports = await getAdminExecutiveReports();
 
-    const headers = ["Client Name", "Campaigns", "Total Ad Spend", "Total Revenue", "Net ROI"];
+    const headers = ["Client Name", "Campaigns", "Channels", "Total Ad Spend", "Total Revenue", "Net ROI"];
     const rows = reports.map((r) => [
       r.companyName ?? "Unknown",
       String(r.totalCampaigns),
+      r.channels.join(", "),
       r.totalSpend,
       r.totalRevenue,
       r.netRoi,

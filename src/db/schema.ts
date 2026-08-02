@@ -5,6 +5,8 @@ export const userRoleEnum = pgEnum("user_role", ["ADMIN", "CLIENT"]);
 
 export const approvalStatusEnum = pgEnum("approval_status", ["PENDING", "APPROVED", "REJECTED"]);
 
+export const campaignChannelEnum = pgEnum("campaign_channel", ["EMAIL", "META", "GOOGLE", "TIKTOK"]);
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
@@ -31,6 +33,7 @@ export const campaigns = pgTable("campaigns", {
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
   title: text("title").notNull(),
+  channel: campaignChannelEnum("channel").default("EMAIL").notNull(),
   status: text("status").default("ACTIVE").notNull(),
   emailsSent: integer("emails_sent").default(0).notNull(),
   openRate: numeric("open_rate", { precision: 5, scale: 2 }).default("0.00").notNull(),

@@ -55,6 +55,16 @@ export async function getGlobalAdminApprovalsQueue(): Promise<GlobalAdminApprova
     .orderBy(desc(contentApprovals.createdAt));
 }
 
+export async function getClientAdminApprovalsQueue(clientId: string): Promise<GlobalAdminApprovalItem[]> {
+  return db
+    .select(globalAdminFields)
+    .from(contentApprovals)
+    .innerJoin(campaigns, eq(contentApprovals.campaignId, campaigns.id))
+    .innerJoin(users, eq(campaigns.clientId, users.id))
+    .where(eq(campaigns.clientId, clientId))
+    .orderBy(desc(contentApprovals.createdAt));
+}
+
 export async function getPendingApprovalsByClient(clientId: string) {
   return db
     .select(approvalFields)
