@@ -5,10 +5,12 @@ import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { z } from "zod";
+import { and, desc, eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { users, campaigns, monthlyTrends } from "@/db/schema";
 import { getAdminExecutiveReports } from "./queries";
+import { injectMetricsValidationSchema, type InjectMetricsInput } from "./inject-metrics-schema";
 
 const onboardSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -85,6 +87,88 @@ export async function onboardNewClientAction(formData: FormData) {
   } catch (error) {
     console.error("[onboard] failed:", error);
     return { success: false as const, data: null, error: "Failed to onboard user." };
+  }
+}
+
+export async function injectClientLiveMetricsAction(input: InjectMetricsInput) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { success: false as const, data: null, error: "Unauthorized." };
+  }
+
+  const parsed = injectMetricsValidationSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false as const, data: null, error: "Invalid telemetry payload provided." };
+  }
+
+  const { clientId, channel, spend, revenueGenerated, emailsSent } = parsed.data;
+
+  try {
+    const [existing] = await db
+      .select({ id: campaigns.id })
+      .from(campaigns)
+      .where(and(eq(campaigns.clientId, clientId), eq(campaigns.channel, channel)))
+      .orderBy(desc(campaigns.updatedAt))
+      .limit(1);
+
+    if (existing) {
+      await db
+        .update(campaigns)
+        .set({
+          spend: spend.toFixed(2),
+          revenueGenerated: revenueGenerated.toFixed(2),
+          emailsSent,
+          updatedAt: new Date(),
+        })
+        .where(eq(campaigns.id, existing.id));
+    } else {
+      await db.insert(campaigns).values({
+        clientId,
+        title: `${channel} Live Telemetry`,
+        channel,
+        status: "ACTIVE",
+        emailsSent,
+        spend: spend.toFixed(2),
+        revenueGenerated: revenueGenerated.toFixed(2),
+      });
+    }
+
+    const monthLabel = new Intl.DateTimeFormat("en-US", { month: "short" }).format(new Date());
+
+    const [trendRow] = await db
+      .select({ id: monthlyTrends.id })
+      .from(monthlyTrends)
+      .where(and(eq(monthlyTrends.clientId, clientId), eq(monthlyTrends.month, monthLabel)))
+      .orderBy(desc(monthlyTrends.createdAt))
+      .limit(1);
+
+    if (trendRow) {
+      await db
+        .update(monthlyTrends)
+        .set({
+          revenue: revenueGenerated.toFixed(2),
+          spend: spend.toFixed(2),
+        })
+        .where(eq(monthlyTrends.id, trendRow.id));
+    } else {
+      await db.insert(monthlyTrends).values({
+        clientId,
+        month: monthLabel,
+        revenue: revenueGenerated.toFixed(2),
+        spend: spend.toFixed(2),
+      });
+    }
+
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/analytics");
+    revalidatePath("/admin/reports");
+    revalidatePath("/client/dashboard");
+    revalidatePath("/client/reports");
+
+    return { success: true as const, data: null, error: undefined };
+  } catch (error) {
+    console.error("[injectClientLiveMetrics] failed:", error);
+    return { success: false as const, data: null, error: "Failed to inject live telemetry metrics." };
   }
 }
 

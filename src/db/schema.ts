@@ -37,6 +37,7 @@ export const campaigns = pgTable("campaigns", {
   status: text("status").default("ACTIVE").notNull(),
   emailsSent: integer("emails_sent").default(0).notNull(),
   openRate: numeric("open_rate", { precision: 5, scale: 2 }).default("0.00").notNull(),
+  spend: numeric("spend", { precision: 12, scale: 2 }).default("0.00").notNull(),
   revenueGenerated: numeric("revenue_generated", { precision: 12, scale: 2 }).default("0.00").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

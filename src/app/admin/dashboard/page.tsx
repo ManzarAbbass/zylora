@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
 
       {selectedClient && clientStats ? (
         <AdminClientOverview
+          clientId={selectedClient.id}
           clientName={selectedClient.companyName}
           stats={clientStats}
           campaigns={clientCampaigns}

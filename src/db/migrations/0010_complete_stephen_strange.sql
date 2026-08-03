@@ -1,0 +1,1 @@
+ALTER TABLE "campaigns" ADD COLUMN "spend" numeric(12, 2) DEFAULT '0.00' NOT NULL;

@@ -106,7 +106,9 @@ export default async function ClientReportsPage() {
                     {c.emailsSent.toLocaleString("en-US")}
                   </td>
                   <td className="px-6 py-4 text-slate-600">{formatCtr(c.openRate)}</td>
-                  <td className="px-6 py-4 text-slate-500">—</td>
+                  <td className="px-6 py-4 text-slate-500">
+                    {parseFloat(c.spend) > 0 ? formatCurrency(c.spend) : "—"}
+                  </td>
                   <td className="px-6 py-4 text-slate-900">
                     {formatCurrency(c.revenueGenerated)}
                   </td>

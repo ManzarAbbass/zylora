@@ -1,16 +1,27 @@
 # Current Feature
+## Administrative Data Entry Terminal
 
 ## Status: Complete
 
 ## Goals
 
-<!-- Add goals here -->
+- Strict Zod validation schema `injectMetricsValidationSchema` (clientId UUID, channel enum, coerced spend/revenue/emailsSent).
+- `injectClientLiveMetricsAction` server action with Drizzle upsert on `campaigns` keyed by clientId + channel.
+- 5-path cache eviction loops on success.
+- Shadcn `[Update Data Metrics]` modal at `src/app/admin/dashboard/components/` with `useTransition` + Sonner toast.
+- `spend` column added to `campaigns` (migration `0010` applied to Neon development branch).
+- Unit tests for schema + upsert action.
 
 ## Notes
 
-<!-- Add notes here -->
+- 100% type safety, zero `any` fallbacks, try/catch wrapped DB layer.
+- Existing layout states and graphs configurations untouched.
+- Pre-existing lint errors in `admin-topbar.tsx` and `client-badges.tsx` remain unrelated to this feature.
+- Post-spec spend sync fix: `injectClientLiveMetricsAction` now also upserts `monthlyTrends` for the current month, and client reports render `campaigns.spend` in the Budget Spend column + Total Investment card — injected spend is visible to the client.
 
 ## History
+
+- **2026-08-03** — Administrative Data Entry Terminal implemented. Created spec at `context/features/admin-data-input-spec.md`. Added `spend numeric(12,2)` column to `campaigns` in `src/db/schema.ts`, migration `0010_complete_stephen_strange.sql` applied directly to Neon development branch (`br-sweet-wave-au56ob0h`). Created `injectMetricsValidationSchema` (Zod: clientId UUID, channel enum, coerced non-negative spend/revenue/emailsSent) and `injectClientLiveMetricsAction` in `src/features/clients/actions.ts` — ADMIN-gated Drizzle upsert keyed on `clientId` + `channel` (match → update spend/revenue/emailsSent; no match → insert new campaign track) with 5-path cache eviction (`/admin/dashboard`, `/admin/analytics`, `/admin/reports`, `/client/dashboard`, `/client/reports`) and `{ success, data?, error? }` contract. Created `MetricsInjectModal` at `src/app/admin/dashboard/components/metrics-inject-modal.tsx` — Shadcn Dialog/Select/Input/Button, React `useTransition`, Light Slate form tokens, and Sonner toast `Enterprise telemetry logs successfully injected and synchronized across multi-tenant dashboards.` Mounted sleek gray `[Update Data Metrics]` button beside the campaigns table header in `AdminClientOverview` (wired `clientId` prop through admin dashboard page). Added unit tests in `src/features/clients/actions.test.ts` (schema coercion/rejection + insert/update upsert paths, 11 tests pass). `npx tsc --noEmit` clean; no new lint issues. Premium Corporate Light Slate theme, strict TypeScript, zero `any` types. Built per `context/features/admin-data-input-spec.md`.
 
 - **2026-07-20** — Unified Gateway & Role Simulation Panel implemented on `feature/login-gateway`. Split layout: left side with marketing content cards + animated floating shapes on page canvas, right side with Royal Blue background and white form card. Includes email/password fields, Lucide icons, Sonner toasts, and Admin/Client simulation injection buttons. Built with Next.js 16.2.10, React 19.2.4, Tailwind v4, lucide-react, sonner.
 

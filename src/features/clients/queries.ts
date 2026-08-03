@@ -111,6 +111,7 @@ export async function getAdminExecutiveReports(): Promise<ExecutiveReport[]> {
   channel: string;
   emailsSent: number;
   openRate: string;
+  spend: string;
   revenueGenerated: string;
 }
 
@@ -133,6 +134,7 @@ export async function getClientExecutiveReportsData(clientId: string): Promise<C
       channel: campaigns.channel,
       emailsSent: campaigns.emailsSent,
       openRate: campaigns.openRate,
+      spend: campaigns.spend,
       revenueGenerated: campaigns.revenueGenerated,
     })
     .from(campaigns)

@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { DollarSign, Mail, Percent, BarChart3 } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import type { ClientWorkspaceStats } from "@/features/campaigns/queries";
+import { MetricsInjectModal } from "@/app/admin/dashboard/components/metrics-inject-modal";
 
 interface ClientCampaign {
   id: string;
@@ -23,12 +24,13 @@ const CHANNEL_LABELS: Record<string, string> = {
 };
 
 interface Props {
+  clientId: string;
   clientName: string;
   stats: ClientWorkspaceStats;
   campaigns: ClientCampaign[];
 }
 
-export function AdminClientOverview({ clientName, stats, campaigns }: Props) {
+export function AdminClientOverview({ clientId, clientName, stats, campaigns }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const formattedRevenue = `$${Number(stats.totalRevenue).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -49,9 +51,12 @@ export function AdminClientOverview({ clientName, stats, campaigns }: Props) {
       </div>
 
       <div className="rounded-xl border border-slate-100 bg-white shadow-sm">
-        <div className="border-b border-slate-100 p-5">
-          <h3 className="text-base font-semibold text-slate-900">Campaigns</h3>
-          <p className="mt-0.5 text-xs text-slate-500">All campaign records for this client, grouped by source channel</p>
+        <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">Campaigns</h3>
+            <p className="mt-0.5 text-xs text-slate-500">All campaign records for this client, grouped by source channel</p>
+          </div>
+          <MetricsInjectModal clientId={clientId} clientName={clientName} />
         </div>
         {campaigns.length === 0 ? (
           <div className="px-5 py-12 text-center text-sm text-slate-400">
