@@ -1,4 +1,4 @@
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { campaigns, monthlyTrends } from "@/db/schema";
 
@@ -44,6 +44,7 @@ export async function getAdminGlobalAnalytics(): Promise<AdminGlobalAnalytics> {
         emailsSent: sql<number>`coalesce(cast(coalesce(sum(${campaigns.emailsSent}), 0) as int), 0)`,
       })
       .from(campaigns)
+      .where(eq(campaigns.status, "ACTIVE"))
       .groupBy(campaigns.title),
 
     db
@@ -53,13 +54,15 @@ export async function getAdminGlobalAnalytics(): Promise<AdminGlobalAnalytics> {
         emailsSent: sql<number>`coalesce(cast(coalesce(sum(${campaigns.emailsSent}), 0) as int), 0)`,
       })
       .from(campaigns)
+      .where(eq(campaigns.status, "ACTIVE"))
       .groupBy(campaigns.channel),
 
     db
       .select({
         avgOpenRate: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
       })
-      .from(campaigns),
+      .from(campaigns)
+      .where(eq(campaigns.status, "ACTIVE")),
   ]);
 
   const sorted = [...monthlyRows].sort(
@@ -113,7 +116,7 @@ export async function getClientGlobalAnalytics(clientId: string): Promise<AdminG
         emailsSent: sql<number>`coalesce(cast(coalesce(sum(${campaigns.emailsSent}), 0) as int), 0)`,
       })
       .from(campaigns)
-      .where(eq(campaigns.clientId, clientId))
+      .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE")))
       .groupBy(campaigns.title),
 
     db
@@ -123,7 +126,7 @@ export async function getClientGlobalAnalytics(clientId: string): Promise<AdminG
         emailsSent: sql<number>`coalesce(cast(coalesce(sum(${campaigns.emailsSent}), 0) as int), 0)`,
       })
       .from(campaigns)
-      .where(eq(campaigns.clientId, clientId))
+      .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE")))
       .groupBy(campaigns.channel),
 
     db
@@ -131,7 +134,7 @@ export async function getClientGlobalAnalytics(clientId: string): Promise<AdminG
         avgOpenRate: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
       })
       .from(campaigns)
-      .where(eq(campaigns.clientId, clientId)),
+      .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE"))),
   ]);
 
   const sorted = [...monthlyRows].sort(

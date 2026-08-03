@@ -1,4 +1,4 @@
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { users, campaigns, monthlyTrends } from "@/db/schema";
 
@@ -64,6 +64,7 @@ export async function getAdminExecutiveReports(): Promise<ExecutiveReport[]> {
       totalRevenue: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`.as("totalRevenue"),
     })
     .from(campaigns)
+    .where(eq(campaigns.status, "ACTIVE"))
     .groupBy(campaigns.clientId)
     .as("campaign_agg");
 
@@ -138,7 +139,7 @@ export async function getClientExecutiveReportsData(clientId: string): Promise<C
       revenueGenerated: campaigns.revenueGenerated,
     })
     .from(campaigns)
-    .where(eq(campaigns.clientId, clientId));
+    .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE")));
 
   const [spendResult] = await db
     .select({

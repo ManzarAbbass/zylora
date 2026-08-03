@@ -1,10 +1,12 @@
 "use client";
 
-import { useRef } from "react";
-import { DollarSign, Mail, Percent, BarChart3 } from "lucide-react";
+import { useRef, useTransition } from "react";
+import { DollarSign, Mail, Percent, BarChart3, Pause, Play, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { StatCard } from "@/components/stat-card";
 import type { ClientWorkspaceStats } from "@/features/campaigns/queries";
 import { MetricsInjectModal } from "@/app/admin/dashboard/components/metrics-inject-modal";
+import { toggleCampaignStatusAction } from "@/features/clients/actions";
 
 interface ClientCampaign {
   id: string;
@@ -28,6 +30,45 @@ interface Props {
   clientName: string;
   stats: ClientWorkspaceStats;
   campaigns: ClientCampaign[];
+}
+
+function CampaignStatusToggle({ campaignId, status }: { campaignId: string; status: string }) {
+  const [isPending, startTransition] = useTransition();
+  const isActive = status === "ACTIVE";
+
+  function handleToggle() {
+    startTransition(async () => {
+      const result = await toggleCampaignStatusAction({ campaignId });
+      if (result.success) {
+        toast.success(isActive ? "Campaign paused." : "Campaign resumed.");
+      } else {
+        toast.error(result.error || "Failed to update campaign status.");
+      }
+    });
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleToggle}
+      disabled={isPending}
+      title={isActive ? "Pause campaign" : "Resume campaign"}
+      aria-label={isActive ? "Pause campaign" : "Resume campaign"}
+      className={`inline-flex items-center justify-center rounded-md border p-1.5 transition disabled:opacity-60 ${
+        isActive
+          ? "border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+          : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+      }`}
+    >
+      {isPending ? (
+        <Loader2 className="size-3.5 animate-spin" />
+      ) : isActive ? (
+        <Pause className="size-3.5" />
+      ) : (
+        <Play className="size-3.5" />
+      )}
+    </button>
+  );
 }
 
 export function AdminClientOverview({ clientId, clientName, stats, campaigns }: Props) {
@@ -86,13 +127,16 @@ export function AdminClientOverview({ clientId, clientName, stats, campaigns }: 
                       </span>
                     </td>
                     <td className="px-5 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          c.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
-                        }`}
-                      >
-                        {c.status === "ACTIVE" ? "Active" : "Paused"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            c.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                          }`}
+                        >
+                          {c.status === "ACTIVE" ? "Active" : "Paused"}
+                        </span>
+                        <CampaignStatusToggle campaignId={c.id} status={c.status} />
+                      </div>
                     </td>
                     <td className="px-5 py-4 text-slate-600">{c.emailsSent.toLocaleString("en-US")}</td>
                     <td className="px-5 py-4 text-slate-600">{c.openRate}%</td>

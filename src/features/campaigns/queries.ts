@@ -23,7 +23,8 @@ export async function getAdminGlobalStats(): Promise<AdminGlobalStats> {
         .select({
           total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
         })
-        .from(campaigns),
+        .from(campaigns)
+        .where(eq(campaigns.status, "ACTIVE")),
       db
         .select({
           count: sql<number>`cast(count(*) as int)`,
@@ -40,7 +41,8 @@ export async function getAdminGlobalStats(): Promise<AdminGlobalStats> {
         .select({
           avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
         })
-        .from(campaigns),
+        .from(campaigns)
+        .where(eq(campaigns.status, "ACTIVE")),
     ]);
 
   return {
@@ -59,6 +61,8 @@ export interface ClientWorkspaceStats {
 }
 
 export async function getClientWorkspaceStats(clientId: string): Promise<ClientWorkspaceStats> {
+  const activeWhere = and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE"));
+
   const [[revenueResult], [impressionsResult], [avgOpenRateResult], [activeCount]] =
     await Promise.all([
       db
@@ -66,25 +70,25 @@ export async function getClientWorkspaceStats(clientId: string): Promise<ClientW
           total: sql<string>`coalesce(cast(sum(${campaigns.revenueGenerated}) as varchar), '0')`,
         })
         .from(campaigns)
-        .where(eq(campaigns.clientId, clientId)),
+        .where(activeWhere),
       db
         .select({
           total: sql<number>`coalesce(cast(sum(${campaigns.emailsSent}) as int), 0)`,
         })
         .from(campaigns)
-        .where(eq(campaigns.clientId, clientId)),
+        .where(activeWhere),
       db
         .select({
           avg: sql<string>`coalesce(cast(avg(${campaigns.openRate}) as varchar), '0')`,
         })
         .from(campaigns)
-        .where(eq(campaigns.clientId, clientId)),
+        .where(activeWhere),
       db
         .select({
           count: sql<number>`cast(count(*) as int)`,
         })
         .from(campaigns)
-        .where(and(eq(campaigns.clientId, clientId), eq(campaigns.status, "ACTIVE"))),
+        .where(activeWhere),
     ]);
 
   return {

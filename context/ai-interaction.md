@@ -49,6 +49,10 @@ We will create a new branch for every feature/fix. Name branch **feature/[featur
 - Don't add "nice to have" features
 - Preserve existing patterns in the codebase
 
+## Testing Compliance
+
+When writing or refactoring any backend Next.js Server Action or database query utility function, the agent is strictly required to automatically generate a corresponding unit test file matching the nomenclature `file.test.ts` inside the same directory to validate code correctness using Vitest expectations matches.
+
 ## Code Review
 
 Review AI-generated code periodically, especially for:

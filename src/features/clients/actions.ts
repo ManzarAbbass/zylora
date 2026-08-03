@@ -20,6 +20,10 @@ const onboardSchema = z.object({
   packageTier: z.string().trim().max(80).nullable().optional(),
 });
 
+const campaignStatusSchema = z.object({
+  campaignId: z.string().uuid(),
+});
+
 function generateTempPassword(): string {
   return randomUUID().replace(/-/g, "").slice(0, 16);
 }
@@ -169,6 +173,50 @@ export async function injectClientLiveMetricsAction(input: InjectMetricsInput) {
   } catch (error) {
     console.error("[injectClientLiveMetrics] failed:", error);
     return { success: false as const, data: null, error: "Failed to inject live telemetry metrics." };
+  }
+}
+
+export async function toggleCampaignStatusAction(input: { campaignId: string }) {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { success: false as const, data: null, error: "Unauthorized." };
+  }
+
+  const parsed = campaignStatusSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false as const, data: null, error: "Invalid campaign reference provided." };
+  }
+
+  const { campaignId } = parsed.data;
+
+  try {
+    const [campaign] = await db
+      .select({ id: campaigns.id, status: campaigns.status })
+      .from(campaigns)
+      .where(eq(campaigns.id, campaignId))
+      .limit(1);
+
+    if (!campaign) {
+      return { success: false as const, data: null, error: "Campaign not found." };
+    }
+
+    const nextStatus = campaign.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
+
+    await db
+      .update(campaigns)
+      .set({ status: nextStatus, updatedAt: new Date() })
+      .where(eq(campaigns.id, campaignId));
+
+    revalidatePath("/admin/dashboard");
+    revalidatePath("/admin/analytics");
+    revalidatePath("/admin/reports");
+    revalidatePath("/client/dashboard");
+    revalidatePath("/client/reports");
+
+    return { success: true as const, data: { status: nextStatus }, error: undefined };
+  } catch (error) {
+    console.error("[toggleCampaignStatus] failed:", error);
+    return { success: false as const, data: null, error: "Failed to update campaign status." };
   }
 }
 
