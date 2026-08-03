@@ -1,23 +1,14 @@
 # Current Feature
-## Administrative Data Entry Terminal
 
 ## Status: Complete
 
 ## Goals
 
-- Strict Zod validation schema `injectMetricsValidationSchema` (clientId UUID, channel enum, coerced spend/revenue/emailsSent).
-- `injectClientLiveMetricsAction` server action with Drizzle upsert on `campaigns` keyed by clientId + channel.
-- 5-path cache eviction loops on success.
-- Shadcn `[Update Data Metrics]` modal at `src/app/admin/dashboard/components/` with `useTransition` + Sonner toast.
-- `spend` column added to `campaigns` (migration `0010` applied to Neon development branch).
-- Unit tests for schema + upsert action.
+<!-- Add goals here -->
 
 ## Notes
 
-- 100% type safety, zero `any` fallbacks, try/catch wrapped DB layer.
-- Existing layout states and graphs configurations untouched.
-- Pre-existing lint errors in `admin-topbar.tsx` and `client-badges.tsx` remain unrelated to this feature.
-- Post-spec spend sync fix: `injectClientLiveMetricsAction` now also upserts `monthlyTrends` for the current month, and client reports render `campaigns.spend` in the Budget Spend column + Total Investment card — injected spend is visible to the client.
+<!-- Add notes here -->
 
 ## History
 
